@@ -1,0 +1,22 @@
+@use '../../../../common/variables' as v;
+@use "sass:math";
+
+.list {
+  @include v.borderPattern;
+
+  position: relative;
+  background-color: v.$lists-bg-color;
+  height: 750px;
+  width: 400px;
+
+  p {
+    margin: v.$first-property-var * 2;
+    font-size: v.$first-property-var * 3;
+  }
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+}

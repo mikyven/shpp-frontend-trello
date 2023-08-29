@@ -1,0 +1,41 @@
+@use '../../common/variables' as v;
+@use "sass:math";
+
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100%;
+}
+
+h1 {
+  text-align: center;
+  font-size: v.$headers-font-size
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: v.$font;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.lists {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  gap: v.$first-property-var * 4;
+  margin: 0 v.$first-property-var * 6;
+
+  #addListBtn {
+    @include v.btnPattern;
+    width: 400px;
+    background-color: v.$cards-bg-color;
+  }
+
+  #addListBtn:hover {
+    filter: brightness(0.9)
+  }
+}

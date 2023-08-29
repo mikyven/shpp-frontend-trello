@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu&display=swap');
+
+$font: 'Ubuntu', sans-serif;
+$lists-width: 400px;
+$cards-width: 350px;
+$cards-font-size: 40px;
+$headers-font-size: 36px;
+$lists-bg-color: #e0e0e0;
+$cards-bg-color: #fff;
+$first-property-var: 12px;
+$second-property-var: 10px;
+
+@mixin borderPattern {
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+@mixin btnPattern {
+  @include borderPattern;
+  cursor: pointer;
+  font-family: $font;
+  font-size: $cards-font-size;
+  height: 80px;
+  transition: filter 0.1s ease;
+}

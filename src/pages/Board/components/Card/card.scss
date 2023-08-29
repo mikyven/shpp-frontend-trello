@@ -1,0 +1,25 @@
+@use '../../../../common/variables' as v;
+@use 'sass:math';
+
+li {
+  @include v.borderPattern;
+
+  margin: v.$first-property-var * 2;
+  background-color: v.$cards-bg-color;
+  font-size: v.$cards-font-size;
+  padding: {
+    top: v.$second-property-var;
+    right: 0;
+    bottom: v.$second-property-var * 2;
+    left: v.$second-property-var;
+  }
+}
+
+#addCardBtn {
+  @include v.btnPattern;
+
+  width: 350px;
+  margin: 0 v.$first-property-var * 2;
+  background-color: v.$lists-bg-color
+}
+  
