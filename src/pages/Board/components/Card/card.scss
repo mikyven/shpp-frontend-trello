@@ -1,6 +1,10 @@
 @use '../../../../common/variables' as v;
 @use 'sass:math';
 
+button:hover {
+  filter: brightness(0.9)
+}
+
 li {
   @include v.borderPattern;
 

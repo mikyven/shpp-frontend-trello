@@ -1,6 +1,10 @@
 @use '../../common/variables' as v;
 @use "sass:math";
 
+button:hover {
+  filter: brightness(0.9)
+}
+
 body {
   margin: 0;
   height: 100vh;
@@ -9,7 +13,17 @@ body {
 
 h1 {
   text-align: center;
-  font-size: v.$headers-font-size
+  font-size: v.$headers-font-size;
+  margin-bottom: v.$first-property-var * 6;
+}
+
+.homeBtn {
+  @include v.btnPattern;
+
+  position: absolute;
+  width: 250px;
+  background-color: v.$cards-bg-color;
+  margin: v.$first-property-var v.$first-property-var * 6;
 }
 
 #root {
@@ -33,9 +47,5 @@ h1 {
     @include v.btnPattern;
     width: 400px;
     background-color: v.$cards-bg-color;
-  }
-
-  #addListBtn:hover {
-    filter: brightness(0.9)
   }
 }

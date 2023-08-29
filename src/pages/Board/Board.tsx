@@ -30,6 +30,7 @@ export function Board(): ReactElement {
 
   return (
     <>
+      <button className="homeBtn">{`<- додому`}</button>
       <h1>{title}</h1>
       <div className="lists">
         {lists.map((i) => (
