@@ -1,0 +1,23 @@
+@use '../../../../../../common/variables' as v;
+
+.listTitle {
+  padding: 3px;
+  margin: 24 - 3px;
+  font-size: v.$headers-font-size;
+  cursor: pointer;
+}
+
+.listTitle:hover {
+  background: rgba(0, 0, 0, 0.1);
+  width: fit-content;
+  border-radius: 5px;
+}
+
+.listTitleInput {
+  padding: 0;
+  height: 38px;
+  width: 200px;
+  font-family: v.$font;
+  font-size: v.$headers-font-size;
+  margin: 24px;
+}

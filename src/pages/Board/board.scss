@@ -11,41 +11,262 @@ body {
   width: 100%;
 }
 
-h1 {
-  text-align: center;
-  font-size: v.$headers-font-size;
-  margin-bottom: v.$first-property-var * 6;
-}
-
-.homeBtn {
-  @include v.btnPattern;
-
-  position: absolute;
-  width: 250px;
-  background-color: v.$cards-bg-color;
-  margin: v.$first-property-var v.$first-property-var * 6;
-}
-
-#root {
+.head {
+  z-index: 1;
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 120px;
   width: 100%;
-  height: 100%;
+
+  .loading-gif{
+    z-index: 1;
+    position: fixed;
+    margin-top: 100px;
+    height: 50px;
+    width: 50px;
+  }
+
+  .homeAnchor {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    height: 50px;
+    width: 50px;
+    border-radius: 5px;
+    background-color: #fff;
+    margin-top: v.$first-property-var;
+    left: 72px;
+    text-decoration: none;
+    color: black;
+  }
+  
+  .homeAnchor:hover {
+    filter: brightness(0.9)
+  }
+  
+  .changeBgBtn {
+    z-index: 1;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 5px;
+    position: fixed;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    border-radius: 5px;
+    background-color: #fff;
+    margin: v.$first-property-var 0;
+    right: 72px;
+    text-decoration: none;
+    color: black;
+  
+    .circle {
+      width: 7px;
+      height: 7px;
+      background-color: black;
+      border-radius: 50%;
+    }
+  }
+  
+  .boardMenu {
+    @include v.borderPattern;
+  
+    background-color: white;
+    display: flex;
+    height: 175px;
+    width: 200px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    right: 18px;
+    margin: v.$first-property-var 0;
+  
+    .menuWrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .backMenuBtn {
+        position: absolute;
+        left: 15px;
+        width: 25px;
+        height: 25px;
+        border-radius: 5px;
+        padding: 0;
+        background: none;
+        border: none;
+        cursor: pointer
+      }
+
+      h2 {
+        margin: 0;
+      }
+
+      .closeMenuBtn {
+        position: absolute;
+        right: 15px;
+        width: 25px;
+        height: 25px;
+        border-radius: 5px;
+        padding: 0;
+        background: none;
+        border: none;
+        cursor: pointer
+      }
+
+      .closeMenuBtn:hover, .backMenuBtn:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+
+      .closeMenuBtn:active, .backMenuBtn:active {
+        background: rgba(0, 0, 0, 0.15);
+      }
+    }
+  
+    hr {
+      width: 85%;
+      height: 1px;
+      border: none;
+      background-color: black;
+    }
+  
+    .bgChangeDiv {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 175px;
+      border-radius: 5px;
+      cursor: pointer;
+  
+      input[type="color"] {
+        appearance: none;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+      }
+  
+      input[type="color"]::-webkit-color-swatch {
+        border-radius: 3px;
+        border: 1px solid black
+      }
+
+      .bgChangeLabel {
+        cursor: pointer;
+        font-size: 20px;
+      }
+    }
+
+    .bgChangeBtn {
+      cursor: pointer;
+      font-size: 24px;
+      border: none;
+      background: none;
+      padding: 5px;
+      font-family: v.$font;
+      border-radius: 5px;
+    }
+  }
+
+  .deleteBoardBtn {
+    font-family: v.$font;
+    font-weight: bold;
+    color: darkred;
+    padding: 5px;
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .bgChangeBtn:hover, .deleteBoardBtn:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .bgChangeBtn:active, .deleteBoardBtn:active {
+    background: rgba(0, 0, 0, 0.15);
+  }
+
+  .bgImagesDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-direction: column;
+
+    .bgImg {
+      cursor: pointer;
+      border-radius: 10px;
+      height: 100px;
+      width: 200px;
+    }
+
+    .bgImg:hover {
+      filter: brightness(0.9);
+    }
+
+    .bgImg:active {
+      filter: brightness(0.85);
+    }
+
+  }
+}
+
+.board {
+  position: relative;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   font-family: v.$font;
   overflow-x: auto;
-  overflow-y: hidden;
 }
 
 .lists {
+  position: absolute;
   display: flex;
   flex-direction: row;
   width: fit-content;
-  gap: v.$first-property-var * 4;
-  margin: 0 v.$first-property-var * 6;
+  margin: v.$first-property-var * 11 v.$first-property-var * 6;
+  
+  .addCardForm {
+    @include v.borderPattern;
 
-  #addListBtn {
-    @include v.btnPattern;
-    width: 400px;
-    background-color: v.$cards-bg-color;
+    margin: 0 v.$first-property-var * 2;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100px;
+    width: 350px;
+    box-shadow: none;
+    background-color: v.$lists-bg-color;
+
+    input[type="text"] {
+      font-family: v.$font;
+      font-size: 30px;
+      width: 300px;
+      margin-bottom: 10px;
+    }
+
+    input[type="submit"] {
+      font-size: 28px;
+      cursor: pointer;
+    }
   }
 }

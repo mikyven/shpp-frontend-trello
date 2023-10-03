@@ -6,12 +6,32 @@
 
   position: relative;
   background-color: v.$lists-bg-color;
-  height: 750px;
+  height: fit-content;
   width: 400px;
+  padding-bottom: 20px;
+  margin-right: 40px;
+  margin-bottom: 36px;
 
-  p {
-    margin: v.$first-property-var * 2;
-    font-size: v.$first-property-var * 3;
+  div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    
+    .deleteBtn {
+      align-self: center;
+      justify-self: right;
+      color: darkred;
+      border: 2px solid darkred;
+      border-radius: 25%;
+      width: 40px;
+      height: 40px;
+      background: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 20px;
+      padding: 0;
+      cursor: pointer;
+    }
   }
 
   ul {

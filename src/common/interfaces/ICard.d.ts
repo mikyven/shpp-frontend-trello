@@ -1,4 +1,4 @@
-export interface LCard {
+export interface ICard {
   id: number;
   title: string;
 }

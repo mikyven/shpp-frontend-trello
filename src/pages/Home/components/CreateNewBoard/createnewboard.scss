@@ -1,0 +1,46 @@
+@use '../../../../common/variables' as v;
+@use "sass:math";
+
+.addBoardBtn {
+  @include v.borderPattern;
+
+  font-size: v.$third-property-var * 2;
+  border-radius: 15px;
+  width: 300px;
+  height: 150px;
+}
+
+.createNewBoardForm {
+  @include v.borderPattern;
+
+  width: 300px;
+  height: 125px;
+  box-sizing: border-box;
+  background-color: v.$lists-bg-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  label, input[type="submit"] {
+    font-family: v.$font;
+  }
+
+  label {
+    font-size: 36px;
+    margin-bottom: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  input[type="text"] {
+    height: 20px;
+    font-size: 20px;
+    font-family: v.$font;
+  }
+
+  input[type="submit"] {
+    font-size: 24px;
+  }
+}

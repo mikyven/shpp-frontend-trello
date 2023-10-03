@@ -8,14 +8,33 @@ button:hover {
 li {
   @include v.borderPattern;
 
+  display: flex;
+  justify-content: space-between;
   margin: v.$first-property-var * 2;
   background-color: v.$cards-bg-color;
   font-size: v.$cards-font-size;
   padding: {
     top: v.$second-property-var;
     right: 0;
-    bottom: v.$second-property-var * 2;
+    bottom: v.$second-property-var;
     left: v.$second-property-var;
+  }
+
+  .deleteBtn {
+    align-self: center;
+    justify-self: right;
+    color: darkred;
+    border: 2px solid darkred;
+    border-radius: 25%;
+    width: 40px;
+    height: 40px;
+    background: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    padding: 0;
+    cursor: pointer;
   }
 }
 

@@ -1,0 +1,20 @@
+@use '../../../../common/variables' as v;
+@use 'sass:math';
+
+
+.home {
+  .homeBoardDiv {
+    @include v.borderPattern;
+  
+    border-radius: 15px;
+    width: 300px;
+    height: 150px;
+  
+    .homeBoardName {
+      color: v.$cards-bg-color;
+      margin: v.$third-property-var 0 0 v.$third-property-var;
+      text-anchor: none;
+      font-size: v.$third-property-var * 2;
+    }
+  }
+}

@@ -1,0 +1,27 @@
+@use '../../../../common/variables' as v;
+
+.boardTitle {
+  z-index: 1;
+  position: fixed;
+  align-self: center;
+  text-align: center;
+  cursor: pointer;
+  font-size: v.$headers-font-size;
+  margin: 0;
+  padding: 5px;
+}
+
+.boardTitle:hover {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.boardTitleInput {
+  z-index: 1;
+  position: fixed;
+  align-self: center;
+  width: 300px;
+  font-size: v.$headers-font-size;
+  font-family: v.$font;
+  height: v.$headers-font-size;
+}
