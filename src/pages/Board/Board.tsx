@@ -27,21 +27,6 @@ export function Board(): ReactElement {
         { id: 6, title: 'погуляти з собакой' },
       ],
     },
-    {
-      id: 4,
-      title: 'Плани',
-      cards: [],
-    },
-    {
-      id: 5,
-      title: 'Плани',
-      cards: [],
-    },
-    {
-      id: 6,
-      title: 'Плани',
-      cards: [],
-    },
   ]);
 
   return (
