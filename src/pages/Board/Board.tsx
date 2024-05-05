@@ -1,4 +1,5 @@
 import { ReactElement, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHouse } from '@fortawesome/free-solid-svg-icons';
 import { List } from './components/List/List';
@@ -31,6 +32,8 @@ export function Board(): ReactElement {
     },
   ]);
 
+  const { boardId } = useParams();
+
   return (
     <div className="board">
       <section className="board_head">
@@ -38,7 +41,9 @@ export function Board(): ReactElement {
           {' '}
           <FontAwesomeIcon icon={faHouse} />
         </a>
-        <h1 className="board_title">{title}</h1>
+        <h1 className="board_title">
+          {title} {boardId}
+        </h1>
       </section>
       <section className="list_parent">
         {lists.map((i) => (
