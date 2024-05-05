@@ -1,4 +1,6 @@
 import { ReactElement, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHouse } from '@fortawesome/free-solid-svg-icons';
 import { List } from './components/List/List';
 import './Board.scss';
 
@@ -31,9 +33,13 @@ export function Board(): ReactElement {
 
   return (
     <div className="board">
-      <header className="board_header">
+      <section className="board_head">
+        <a className="home_link" href="/" draggable={false}>
+          {' '}
+          <FontAwesomeIcon icon={faHouse} />
+        </a>
         <h1 className="board_title">{title}</h1>
-      </header>
+      </section>
       <section className="list_parent">
         {lists.map((i) => (
           <List key={i.id} title={i.title} cards={i.cards} />

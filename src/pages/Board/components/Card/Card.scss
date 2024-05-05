@@ -1,0 +1,16 @@
+@use '../../../../common/variables' as v;
+
+.card {
+  @include v.shadow;
+
+  border-radius: v.$mainRadius;
+  border: 0.5px solid v.$mainBorderColor;
+  background-color: white;
+  display: flex;
+  align-items: center;
+
+  .card_title {
+    font-size: v.$mainFontSize;
+    margin-left: v.$secondarySize;
+  }
+}

@@ -1,17 +1,38 @@
+@use '../../common/variables' as v;
+
 .board {
+  user-select: none;
   min-width: 100vw;
   display: flex;
   flex-direction: column;
   overflow-x: auto;
   overflow-y: hidden;
 
-  .board_header {
+  .board_head {
     width: 100%;
-    margin-top: 25px;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+
+    .home_link {
+      @include v.btnEffects(v.$boardColor);
+
+      position: absolute;
+      left: 100px;
+      height: 40px;
+      width: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      border-radius: v.$mainRadius;
+
+      & > * {
+        height: 30px;
+        width: 30px;
+      }
+    }
   }
 
   .list_parent {
@@ -21,24 +42,13 @@
     padding: 0 100px;
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 25px;
 
     .add-list_btn {
-      background-color: rgba($color: #fff, $alpha: 0.25);
-      color: white;
-      font-family: inherit;
-      font-size: 24px;
-      font-weight: 200;
-      width: 275px;
-      height: 65px;
-      border: 0;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: opacity 0.1s ease-in;
+      @include v.button(v.$boardColor);
 
-      &:hover {
-        opacity: 0.8;
-      }
+      color: white;
+      width: 275px;
     }
   }
 }

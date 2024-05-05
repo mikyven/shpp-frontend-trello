@@ -1,13 +1,49 @@
+@use '../../../../common/variables' as v;
+
 .list {
-  background-color: white;
+  background-color: v.$listColor;
   width: 275px;
   height: fit-content;
-  border-radius: 10px;
+  border-radius: v.$mainRadius;
   color: black;
-  padding: 5px;
+  padding: v.$secondarySize;
 
   .list_title {
-    font-size: 24px;
-    margin-left: 5px;
+    font-size: v.$titlesFontSize;
+    font-weight: 700;
+    margin-left: v.$primarySize;
+  }
+
+  .cards_parent {
+    margin: 0 0 v.$secondarySize v.$primarySize;
+    padding: 0 0 calc(v.$primarySize - v.$secondarySize) 0;
+    list-style-type: none;
+    height: fit-content;
+    width: 260px;
+    max-height: calc(100vh - 300px);
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    gap: v.$primarySize;
+    overflow-y: auto;
+    scrollbar-width: thin;
+
+    & > * {
+      height: 50px;
+      width: 245px;
+    }
+  }
+
+  .add-card_btn {
+    @include v.button(v.$listColor);
+
+    margin: 0 auto v.$secondarySize;
+    width: 245px;
+    color: v.white(30);
+
+    &:hover,
+    &:active {
+      color: black;
+    }
   }
 }
