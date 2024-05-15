@@ -1,0 +1,79 @@
+@use '../../../../styles/global' as v;
+
+.create-board_modal {
+  padding: 0 map-get(v.$margins, smallest) map-get(v.$margins, main);
+  position: fixed;
+  z-index: 1;
+  height: 160px;
+  background-color: white;
+  border-radius: v.$primaryBorderRadius;
+  border: 1px solid v.$border;
+  box-shadow: 0 0 map-get(v.$margins, small) 0 v.$border;
+  display: flex;
+  flex-direction: column;
+
+  .head {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .heading {
+      margin: map-get(v.$margins, small) 0 map-get(v.$margins, small) 12.5%;
+      color: v.$dark;
+      font-weight: 600;
+      width: 75%;
+      font-size: map-get(v.$fontSizes, small);
+      text-align: center;
+    }
+
+    .close_btn {
+      @include v.closeButton(white);
+
+      height: 35px;
+      width: 35px;
+      font-size: map-get(v.$fontSizes, medium);
+    }
+  }
+
+  .body {
+    height: 80%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    & > * {
+      margin-left: map-get(v.$margins, smallest);
+    }
+
+    .name_label {
+      color: hsl(0, 0%, 30%);
+      font-weight: 700;
+      font-size: map-get(v.$fontSizes, small);
+      margin-bottom: map-get(v.$margins, smallest);
+
+      .required-star {
+        color: red;
+        font-size: map-get(v.$fontSizes, smallest);
+        margin-left: 2px;
+      }
+    }
+
+    .name_input {
+      font-size: map-get(v.$fontSizes, small);
+      font-weight: 300;
+      height: 24px;
+      width: 95%;
+      padding: 18px map-get(v.$margins, small);
+      margin-bottom: map-get(v.$margins, main);
+    }
+
+    .submit_btn {
+      @include v.submitButton;
+
+      height: 32px;
+      width: 95%;
+      font-size: map-get(v.$fontSizes, smallest);
+    }
+  }
+}

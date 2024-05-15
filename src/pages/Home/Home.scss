@@ -1,4 +1,4 @@
-@use '../../common/variables' as v;
+@use '../../styles/global' as v;
 
 .home {
   user-select: none;
@@ -8,7 +8,7 @@
   overflow-x: auto;
   overflow-y: hidden;
 
-  .home_head {
+  .head {
     height: 150px;
     width: 100%;
     display: flex;
@@ -17,62 +17,32 @@
     align-items: center;
   }
 
-  .home_boards {
+  .boards {
     align-self: center;
     width: 1300px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     place-items: center;
 
+    & * {
+      width: 225px;
+    }
+
     & > a {
       color: white;
       text-decoration: none;
       height: 125px;
-      width: 225px;
-
-      & > * {
-        width: inherit;
-        border-radius: v.$mainRadius;
-      }
-
-      .home_board {
-        position: absolute;
-        height: 125px;
-        transition: all 0.1s ease-in;
-
-        .home_board_title {
-          font-weight: 600;
-          font-size: v.$mainFontSize;
-          margin: v.$primarySize;
-        }
-
-        .home_board_bg {
-          filter: brightness(0.7);
-          border-radius: inherit;
-          z-index: -1;
-          position: absolute;
-          top: 0;
-          height: inherit;
-          width: inherit;
-        }
-
-        &:hover {
-          opacity: 0.8;
-        }
-
-        &:active {
-          opacity: 0.7;
-        }
-      }
     }
 
-    .add-board_btn {
-      @include v.button(v.$listColor);
+    .create-board_btn {
+      @include v.button(v.$light);
+
+      border-radius: v.$primaryBorderRadius;
+      font-size: map-get(v.$fontSizes, small);
       height: 125px;
-      width: 225px;
       align-items: center;
       justify-content: center;
-      padding: 0;
+      padding: none;
     }
   }
 }

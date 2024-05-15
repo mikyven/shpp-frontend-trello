@@ -1,0 +1,70 @@
+@use 'variables' as v;
+
+@mixin button($bg) {
+  background-color: $bg;
+
+  &:hover:not(:disabled) {
+    @if alpha($bg) == 1 {
+      background-color: darken($bg, 10%);
+    } @else {
+      background-color: lighten($bg, 25%);
+    }
+  }
+
+  &:active:not(:disabled) {
+    @if alpha($bg) == 1 {
+      background-color: darken($bg, 15%);
+    } @else {
+      background-color: lighten($bg, 30%);
+    }
+  }
+}
+
+@mixin mainCreateButton($bg) {
+  @include button($bg);
+
+  height: 50px;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding-left: map-get(v.$margins, 'main');
+  font-size: map-get(v.$fontSizes, 'medium');
+  border-radius: v.$primaryBorderRadius;
+}
+
+@mixin submitButton {
+  @include button(v.$blue);
+
+  color: white;
+  border-radius: v.$formContentBorderRadius;
+  font-size: map-get(v.$fontSizes, 'smallest');
+
+  &:disabled {
+    cursor: not-allowed;
+    background-color: rgba(#000, 0.5);
+    opacity: 0.2;
+  }
+}
+
+@mixin closeButton($bg) {
+  @include button($bg);
+
+  color: rgba(#000, 0.5);
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  padding: none;
+  border-radius: v.$primaryBorderRadius;
+}
+
+@mixin iconButton {
+  @include button(v.$transparentDark);
+
+  background: none;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: v.$primaryBorderRadius;
+}

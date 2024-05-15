@@ -1,0 +1,24 @@
+$light: #f2f2f2;
+$dark: #666666;
+$blue: #3366cc;
+$red: #cc0000;
+$transparentLight: rgba(#fff, 0.4);
+$transparentDark: rgba(#000, 0.3);
+$border: rgba(#000, 0.2);
+
+$primaryBorderRadius: 10px;
+$formContentBorderRadius: 3px;
+
+$fontSizes: (
+  'smallest': 14px,
+  'small': 16px,
+  'medium': 18px,
+  'large': 24px,
+  'largest': 42px,
+);
+
+$margins: (
+  'smallest': 5px,
+  'small': 10px,
+  'main': 15px,
+);

@@ -1,49 +1,124 @@
-@use '../../../../common/variables' as v;
+@use '../../../../styles/global' as v;
 
 .list {
-  background-color: v.$listColor;
+  background-color: v.$light;
   width: 275px;
   height: fit-content;
-  border-radius: v.$mainRadius;
+  border-radius: v.$primaryBorderRadius;
   color: black;
-  padding: v.$secondarySize;
+  padding: map-get(v.$margins, smallest);
 
-  .list_title {
-    font-size: v.$titlesFontSize;
+  .list_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 95%;
+    height: 40px;
+    margin: map-get(v.$margins, small);
+    font-size: map-get(v.$fontSizes, large);
     font-weight: 700;
-    margin-left: v.$primarySize;
+
+    .list_title {
+      display: flex;
+      align-items: flex-end;
+      box-sizing: border-box;
+      padding: map-get(v.$margins, smallest);
+      height: inherit;
+      width: 80%;
+      font-size: inherit;
+      font-weight: inherit;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .title_input {
+      border-radius: v.$primaryBorderRadius;
+      padding: map-get(v.$margins, smallest);
+      height: inherit;
+      width: 80%;
+    }
+
+    .delete-list_btn {
+      @include v.button(v.$light);
+
+      height: 40px;
+      width: 40px;
+      font-size: map-get(v.$fontSizes, medium);
+      text-align: center;
+      border-radius: v.$primaryBorderRadius;
+    }
   }
 
   .cards_parent {
-    margin: 0 0 v.$secondarySize v.$primarySize;
-    padding: 0 0 calc(v.$primarySize - v.$secondarySize) 0;
+    margin: 0;
+    padding: 0 0 map-get(v.$margins, small) 0;
     list-style-type: none;
     height: fit-content;
-    width: 260px;
+    width: 100%;
     max-height: calc(100vh - 300px);
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-items: center;
-    gap: v.$primarySize;
+    gap: map-get(v.$margins, small);
     overflow-y: auto;
     scrollbar-width: thin;
 
     & > * {
       height: 50px;
-      width: 245px;
+      width: 95%;
     }
   }
 
   .add-card_btn {
-    @include v.button(v.$listColor);
+    @include v.mainCreateButton(v.$light);
 
-    margin: 0 auto v.$secondarySize;
-    width: 245px;
-    color: v.white(30);
+    margin: 0 auto map-get(v.$margins, smallest);
+    width: 95%;
+    color: hsl(0, 0%, 30%);
 
     &:hover,
     &:active {
       color: black;
+    }
+  }
+
+  .add-card_modal {
+    height: 100px;
+    padding: 0 map-get(v.$margins, smallest) map-get(v.$margins, small);
+    width: 95%;
+
+    input {
+      height: 55%;
+      width: 100%;
+      display: flex;
+      text-align: start;
+      padding: map-get(v.$margins, small);
+      font-size: map-get(v.$fontSizes, small);
+      border-radius: v.$primaryBorderRadius;
+    }
+
+    .btn-container {
+      height: 45%;
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+
+      .submit_btn {
+        @include v.submitButton;
+
+        height: 35px;
+        padding: map-get(v.$margins, small);
+      }
+
+      .close_btn {
+        @include v.closeButton(v.$light);
+
+        height: 35px;
+        width: 35px;
+        font-size: map-get(v.$fontSizes, large);
+        border-radius: v.$formContentBorderRadius;
+      }
     }
   }
 }
