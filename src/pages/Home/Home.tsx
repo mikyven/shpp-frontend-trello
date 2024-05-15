@@ -4,6 +4,7 @@ import { Board } from './components/Board/Board';
 import { CreateBoardModal } from './components/CreateBoardModal/CreateBoardModal';
 import api from '../../api/request';
 import './Home.scss';
+import { Interceptors } from '../../components/ProgressBar/Interceptors';
 
 interface IBoard {
   id: number;
@@ -33,22 +34,27 @@ export function Home(): ReactElement {
     window.location.href = `/board/${id}`;
   }
 
+  document.title = 'Мої дошки | Trello';
+
   return (
-    <div className="home">
-      <section className="head">
-        <h1>Мої дошки</h1>
-      </section>
-      <section className="boards">
-        {boardsList.map((i) => (
-          <Link to={`board/${i.id}`} key={i.id} draggable={false}>
-            <Board title={i.title} custom={i.custom || {}} />
-          </Link>
-        ))}
-        <button className="create-board_btn" onClick={() => setIsAddingBoard(!isAddingBoard)}>
-          + Створити дошку
-        </button>
-        {isAddingBoard && <CreateBoardModal postNewBoard={postNewBoard} closeModal={() => setIsAddingBoard(false)} />}
-      </section>
-    </div>
+    <>
+      <Interceptors />
+      <div className="home">
+        <section className="head">
+          <h1>Мої дошки</h1>
+        </section>
+        <section className="boards">
+          {boardsList.map((i) => (
+            <Link to={`board/${i.id}`} key={i.id} draggable={false}>
+              <Board title={i.title} custom={i.custom || {}} />
+            </Link>
+          ))}
+          <button className="create-board_btn" onClick={() => setIsAddingBoard(!isAddingBoard)}>
+            + Створити дошку
+          </button>
+          {isAddingBoard && <CreateBoardModal postNewBoard={postNewBoard} closeModal={() => setIsAddingBoard(false)} />}
+        </section>
+      </div>
+    </>
   );
 }
