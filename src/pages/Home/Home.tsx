@@ -4,7 +4,7 @@ import { Board } from './components/Board/Board';
 import { CreateBoardModal } from './components/CreateBoardModal/CreateBoardModal';
 import api from '../../api/request';
 import './Home.scss';
-import { Interceptors } from '../../components/ProgressBar/Interceptors';
+import { Interceptors } from '../../components/Interceptors/Interceptors';
 
 interface IBoard {
   id: number;
@@ -17,20 +17,17 @@ export function Home(): ReactElement {
   const [isAddingBoard, setIsAddingBoard] = useState(false);
   const [boardsList, setBoardsList] = useState<IBoard[]>([]);
 
-  useEffect(() => {
-    const fetchBoards = async (): Promise<void> => {
-      const { boards }: { boards: IBoard[] } = await api.get('/board/');
-      setBoardsList(boards);
-    };
+  const fetchBoards = async (): Promise<void> => {
+    const { boards }: { boards: IBoard[] } = await api.get('/board/');
+    setBoardsList(boards);
+  };
 
+  useEffect(() => {
     fetchBoards();
   }, []);
 
   async function postNewBoard(title: string): Promise<void> {
     const { id }: { id: number } = await api.post('/board', { title });
-
-    const { boards }: { boards: IBoard[] } = await api.get('/board');
-    setBoardsList(boards);
     window.location.href = `/board/${id}`;
   }
 
@@ -46,7 +43,7 @@ export function Home(): ReactElement {
         <section className="boards">
           {boardsList.map((i) => (
             <Link to={`board/${i.id}`} key={i.id} draggable={false}>
-              <Board title={i.title} custom={i.custom || {}} />
+              <Board title={i.title} custom={i.custom} />
             </Link>
           ))}
           <button className="create-board_btn" onClick={() => setIsAddingBoard(!isAddingBoard)}>

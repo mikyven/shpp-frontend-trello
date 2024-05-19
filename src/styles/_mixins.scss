@@ -1,6 +1,6 @@
 @use 'variables' as v;
 
-@mixin button($bg) {
+@mixin buttonBgEffects($bg) {
   background-color: $bg;
 
   &:hover:not(:disabled) {
@@ -20,24 +20,34 @@
   }
 }
 
+@mixin buttonOpacityEffects() {
+  &:hover {
+    filter: opacity(0.8);
+  }
+
+  &:active {
+    filter: opacity(0.8);
+  }
+}
+
 @mixin mainCreateButton($bg) {
-  @include button($bg);
+  @include buttonBgEffects($bg);
 
   height: 50px;
   display: flex;
   align-items: center;
   text-align: left;
-  padding-left: map-get(v.$margins, 'main');
-  font-size: map-get(v.$fontSizes, 'medium');
+  padding-left: map-get(v.$margins, main);
+  font-size: map-get(v.$fontSizes, medium);
   border-radius: v.$primaryBorderRadius;
 }
 
 @mixin submitButton {
-  @include button(v.$blue);
+  @include buttonBgEffects(v.$blue);
 
   color: white;
-  border-radius: v.$formContentBorderRadius;
-  font-size: map-get(v.$fontSizes, 'smallest');
+  border-radius: v.$sharpBorderRadius;
+  font-size: map-get(v.$fontSizes, smallest);
 
   &:disabled {
     cursor: not-allowed;
@@ -47,11 +57,10 @@
 }
 
 @mixin closeButton($bg) {
-  @include button($bg);
+  @include buttonBgEffects($bg);
 
   color: rgba(#000, 0.5);
   display: flex;
-  text-align: center;
   align-items: center;
   justify-content: center;
   padding: none;
@@ -59,7 +68,7 @@
 }
 
 @mixin iconButton {
-  @include button(v.$transparentDark);
+  @include buttonBgEffects(v.$transparentDark);
 
   background: none;
   color: white;

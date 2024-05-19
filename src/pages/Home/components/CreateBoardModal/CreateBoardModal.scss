@@ -7,18 +7,18 @@
   height: 160px;
   background-color: white;
   border-radius: v.$primaryBorderRadius;
-  border: 1px solid v.$border;
-  box-shadow: 0 0 map-get(v.$margins, small) 0 v.$border;
+  border: 1px solid v.$borderColor;
+  box-shadow: 0 0 map-get(v.$margins, small) 0 v.$borderColor;
   display: flex;
   flex-direction: column;
 
   .head {
+    position: relative;
     display: flex;
     align-items: center;
-    width: 100%;
 
     .heading {
-      margin: map-get(v.$margins, small) 0 map-get(v.$margins, small) 12.5%;
+      margin: map-get(v.$margins, small) 0;
       color: v.$dark;
       font-weight: 600;
       width: 75%;
@@ -29,6 +29,8 @@
     .close_btn {
       @include v.closeButton(white);
 
+      position: absolute;
+      right: 0;
       height: 35px;
       width: 35px;
       font-size: map-get(v.$fontSizes, medium);
@@ -36,19 +38,19 @@
   }
 
   .body {
-    height: 80%;
-    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    margin-left: map-get(v.$margins, smallest);
 
-    & > * {
-      margin-left: map-get(v.$margins, smallest);
+    input,
+    button {
+      width: 95%;
     }
 
     .name_label {
-      color: hsl(0, 0%, 30%);
-      font-weight: 700;
+      color: black;
+      font-weight: 600;
       font-size: map-get(v.$fontSizes, small);
       margin-bottom: map-get(v.$margins, smallest);
 
@@ -63,7 +65,6 @@
       font-size: map-get(v.$fontSizes, small);
       font-weight: 300;
       height: 24px;
-      width: 95%;
       padding: 18px map-get(v.$margins, small);
       margin-bottom: map-get(v.$margins, main);
     }
@@ -72,8 +73,6 @@
       @include v.submitButton;
 
       height: 32px;
-      width: 95%;
-      font-size: map-get(v.$fontSizes, smallest);
     }
   }
 }

@@ -1,0 +1,36 @@
+@use '/src/styles/global' as v;
+
+.add_modal {
+  form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    input {
+      width: 100%;
+      font-size: map-get(v.$fontSizes, small);
+    }
+  }
+
+  .btn_container {
+    display: flex;
+    align-items: flex-end;
+    gap: map-get(v.$margins, smallest);
+
+    & > * {
+      height: 35px;
+    }
+
+    .submit_btn {
+      @include v.submitButton;
+    }
+
+    .close_btn {
+      @include v.closeButton(v.$light);
+
+      width: 35px;
+      border-radius: v.$sharpBorderRadius;
+      font-size: map-get(v.$fontSizes, large);
+    }
+  }
+}

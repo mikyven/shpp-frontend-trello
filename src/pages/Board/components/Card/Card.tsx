@@ -1,9 +1,8 @@
 import { ReactElement } from 'react';
 import './Card.scss';
+import { ICardProps } from '../../../../common/interfaces/Props';
 
-export function Card(props: { title: string }): ReactElement {
-  const { title } = props;
-
+export function Card({ title }: ICardProps): ReactElement {
   return (
     <li className="card">
       <p className="card_title">{title}</p>

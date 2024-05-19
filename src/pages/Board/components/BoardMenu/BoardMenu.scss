@@ -1,0 +1,139 @@
+@use '/src/styles/global' as v;
+
+.board-menu {
+  position: absolute;
+  top: 25%;
+  right: 0;
+  height: fit-content;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: black;
+  background-color: white;
+  padding-bottom: map-get(v.$margins, main);
+  border-radius: v.$primaryBorderRadius;
+  box-shadow: 0 1px 5px 0 v.$borderColor;
+
+  &.changing-bg {
+    width: 350px;
+  }
+
+  .menu-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: map-get(v.$margins, main);
+    width: 100%;
+
+    h2 {
+      margin: 0;
+    }
+
+    button {
+      @include v.closeButton(white);
+
+      color: black;
+      position: absolute;
+      height: 30px;
+      width: 30px;
+      font-size: map-get(v.$fontSizes, medium);
+    }
+
+    .return-btn {
+      left: map-get(v.$margins, main);
+    }
+
+    .close-btn {
+      right: map-get(v.$margins, main);
+    }
+  }
+
+  hr {
+    width: 90%;
+    margin: map-get(v.$margins, small);
+    height: 1px;
+    background-color: v.$borderColor;
+    border: none;
+  }
+
+  p {
+    font-size: map-get(v.$fontSizes, medium);
+    margin: 0 0 map-get(v.$margins, main);
+    font-weight: 700;
+  }
+
+  .main_page {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: map-get(v.$margins, smallest);
+
+    button {
+      position: relative;
+      width: 100%;
+      padding: map-get(v.$margins, small);
+      font-size: map-get(v.$fontSizes, medium);
+      border-radius: v.$primaryBorderRadius;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .icon {
+        position: absolute;
+        left: map-get(v.$margins, small);
+      }
+    }
+
+    .change-board-bg_btn {
+      @include v.buttonBgEffects(white);
+      color: black;
+    }
+
+    .delete-board_btn {
+      color: v.$red;
+      background: none;
+
+      &:hover {
+        color: white;
+        background-color: v.$red;
+      }
+    }
+  }
+
+  .changing-bg_page {
+    hr {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    .colors_container {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: map-get(v.$margins, small);
+
+      .color_btn {
+        @include v.buttonOpacityEffects;
+
+        position: relative;
+        height: 45px;
+        width: 45px;
+        border-radius: v.$primaryBorderRadius;
+      }
+    }
+
+    .images_container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: map-get(v.$margins, main);
+
+      .image_btn {
+        position: relative;
+        height: 100px;
+        width: 150px;
+        border-radius: v.$primaryBorderRadius;
+      }
+    }
+  }
+}

@@ -1,11 +1,17 @@
 @use '../../../../styles/global' as v;
 
 .home_board {
-  position: absolute;
+  @include v.buttonOpacityEffects;
+
   height: inherit;
   width: inherit;
   border-radius: v.$primaryBorderRadius;
-  transition: all 0.1s ease-in;
+  display: flex;
+  align-items: flex-start;
+  text-align: start;
+  color: white;
+  background: none;
+  padding: 0;
 
   .board_title {
     font-weight: 600;
@@ -14,21 +20,11 @@
   }
 
   .board_bg {
-    background-color: v.$dark;
-    filter: brightness(0.7);
+    position: absolute;
+    height: inherit;
     border-radius: inherit;
     z-index: -1;
-    position: absolute;
-    top: 0;
-    height: inherit;
-    width: inherit;
-  }
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:active {
-    opacity: 0.7;
+    background: v.$dark;
+    filter: brightness(0.8);
   }
 }

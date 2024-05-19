@@ -1,7 +1,7 @@
 import { ReactElement, useState } from 'react';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import api from '../../api/request';
+import 'react-toastify/dist/ReactToastify.css';
 import './Interceptors.scss';
 
 export function Interceptors(): ReactElement {
@@ -21,9 +21,8 @@ export function Interceptors(): ReactElement {
 
   api.interceptors.response.use(
     (response) => {
-      setLoadingProgress(100);
-      setTimeout(() => setIsLoading(false), 50);
-
+      setIsLoading(false);
+      setLoadingProgress(0);
       return response;
     },
     (error) => {

@@ -1,30 +1,19 @@
-import { ReactElement, useRef } from 'react';
+import { ReactElement, useState } from 'react';
+import { onSubmit } from '../../common/constants/submitHandler';
+import { Input } from '../Input/Input';
+import { ITitleInput } from '../../common/interfaces/Props';
 import './TitleInput.scss';
 
-export function TitleInput(props: { title: string; onTitleEdited: (newTitle: string) => Promise<void> }): ReactElement {
-  const { title, onTitleEdited } = props;
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  function checkNewTitle(): void {
-    const value = inputRef.current?.value || '';
-
-    if (value && /^[А-ЯҐЄІЇ\w ._-]+$/gi.test(value)) {
-      onTitleEdited(value);
-    }
-  }
+export function TitleInput({ title, editTitle, hideInput }: ITitleInput): ReactElement {
+  const [value, setValue] = useState(title);
 
   return (
-    <input
+    <Input
+      name="titleInput"
       className="title_input"
-      autoComplete="off"
-      defaultValue={title}
-      ref={(input) => {
-        input?.focus();
-        input?.select();
-        inputRef.current = input;
-      }}
-      onKeyDown={(e) => (e.key === 'Enter' ? checkNewTitle() : null)}
-      onBlur={checkNewTitle}
+      onSubmit={onSubmit(value, editTitle, hideInput)}
+      submitOnBlur
+      {...{ value, setValue }}
     />
   );
 }

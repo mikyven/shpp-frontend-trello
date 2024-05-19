@@ -1,37 +1,21 @@
-import { ReactElement, useState, useRef, FormEvent, useEffect } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import './CreateBoardModal.scss';
+import { onSubmit } from '../../../../common/constants/submitHandler';
+import { Input } from '../../../../components/Input/Input';
+import { ICreateBoardModal } from '../../../../common/interfaces/Props';
 
-export function CreateBoardModal(props: {
-  postNewBoard: (title: string) => Promise<void>;
-  closeModal: () => void;
-}): ReactElement {
-  const { postNewBoard, closeModal } = props;
+export function CreateBoardModal({ postNewBoard, closeModal }: ICreateBoardModal): ReactElement {
   const [isInputEmpty, setIsInputEmpty] = useState(true);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [value, setValue] = useState<string>('');
+  const [value, setValue] = useState('');
 
-  useEffect((): void => {
-    if (!value) {
-      inputRef.current?.classList.add('empty');
-      setIsInputEmpty(true);
-      return;
-    }
-    inputRef.current?.classList.remove('empty');
-    setIsInputEmpty(false);
-  }, [value]);
+  const checkIsEmpty = (str: string): void => setIsInputEmpty(!str);
 
-  function onBoardCreated(e: FormEvent): void {
-    e.preventDefault();
-    if (/^[А-ЯҐЄІЇ\w ._-]+$/gi.test(value)) {
-      postNewBoard(value);
-    }
-    closeModal();
-  }
+  useEffect(() => checkIsEmpty(value), [value]);
 
   return (
-    <form className="create-board_modal" onSubmit={onBoardCreated}>
+    <form className="create-board_modal" onSubmit={onSubmit(value, postNewBoard, closeModal)}>
       <div className="head">
         <h2 className="heading">Створити дошку</h2>
         <button className="close_btn" onClick={closeModal}>
@@ -39,24 +23,16 @@ export function CreateBoardModal(props: {
           <FontAwesomeIcon icon={faXmark} />
         </button>
       </div>
-
       <div className="body">
         <label className="name_label" htmlFor="name_input">
           Назва дошки<span className="required-star">*</span>
         </label>
-        <input
-          type="text"
-          id="name_input"
-          className="name_input"
+        <Input
+          name="name_input"
+          className={`name_input ${isInputEmpty ? 'empty' : ''}`}
           placeholder="Введіть ім'я дошки..."
-          autoComplete="off"
-          value={value}
-          ref={(input) => {
-            input?.focus();
-            inputRef.current = input;
-          }}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && onBoardCreated(e)}
+          onSubmit={onSubmit(value, postNewBoard, closeModal)}
+          {...{ value, setValue }}
         />
         <button type="submit" className="submit_btn" disabled={isInputEmpty}>
           Створити

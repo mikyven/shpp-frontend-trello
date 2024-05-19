@@ -1,17 +1,15 @@
 @use '../../styles/global' as v;
 
 .loading {
-  position: absolute;
-  width: 100%;
+  position: fixed;
   height: 100%;
-  z-index: 100;
+  width: 100%;
+  z-index: 3;
   background-color: v.$transparentDark;
-  font-size: map-get(v.$fontSizes, largest);
 
   .progress-bar {
     border-radius: v.$primaryBorderRadius;
     height: 3px;
     background-color: v.$blue;
-    text-align: center;
   }
 }
