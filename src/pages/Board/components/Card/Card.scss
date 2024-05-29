@@ -7,11 +7,19 @@
   border: 0.5px solid v.$borderColor;
   box-shadow: 0px 1px 2px 0px v.$borderColor;
   background-color: white;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
+  cursor: grab;
+  z-index: 1;
+  font-size: map-get(v.$fontSizes, medium);
+  padding-left: 5px;
+}
 
-  .card_title {
-    font-size: map-get(v.$fontSizes, medium);
-    margin-left: map-get(v.$margins, smallest);
-  }
+.card-slot {
+  z-index: 0;
+  height: 50px;
+  width: 95%;
+  background-color: rgba(#000, 0.1);
+  border-radius: v.$primaryBorderRadius;
 }

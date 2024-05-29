@@ -1,3 +1,4 @@
+import { DragEvent } from 'react';
 import { ICard } from './ICard';
 
 export interface IAddForm {
@@ -36,6 +37,7 @@ interface IBoardMenu {
 
 interface ICardProps {
   title: string;
+  onDragStart: (e: DragEvent) => void;
 }
 
 interface IAddCard {
@@ -47,6 +49,8 @@ interface IListProps {
   title: string;
   cards: ICard[];
   onRequestMade: () => void;
+  oldCards: ICard[] | null;
+  setOldCards: (cards: ICard[]) => void;
 }
 
 interface ICreateBoardModal {

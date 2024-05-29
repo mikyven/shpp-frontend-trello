@@ -10,6 +10,7 @@ import { TitleInput } from '../../components/TitleInput/TitleInput';
 import { Interceptors } from '../../components/Interceptors/Interceptors';
 import { BoardMenu } from './components/BoardMenu/BoardMenu';
 import { AddList } from './components/AddList/AddList';
+import { ICard } from '../../common/interfaces/ICard';
 
 interface IBoard {
   title: string;
@@ -25,12 +26,13 @@ export function Board(): ReactElement {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const { boardId } = useParams();
   const [didMakeRequest, setDidMakeRequest] = useState(false);
+  const [oldCards, setOldCards] = useState<ICard[] | null>(null);
 
   const fetchBoard = async (): Promise<void> => {
     const board: IBoard = await api.get(`/board/${boardId}`);
     setTitle(board.title);
     document.title = `${board.title} | Trello`;
-    setLists(board.lists);
+    setLists(board.lists.sort((a, b) => a.position - b.position));
     if (board.custom && board.custom.background) {
       setBackground(board.custom.background);
     }
@@ -93,7 +95,15 @@ export function Board(): ReactElement {
         </section>
         <section className="list_parent">
           {lists.map((i) => (
-            <List key={i.id} id={i.id} title={i.title} cards={i.cards} onRequestMade={() => setDidMakeRequest(true)} />
+            <List
+              key={i.id}
+              id={i.id}
+              title={i.title}
+              cards={i.cards}
+              onRequestMade={() => setDidMakeRequest(true)}
+              oldCards={oldCards}
+              setOldCards={(cards) => setOldCards(cards)}
+            />
           ))}
           <AddList postNewList={postNewList} />
         </section>
