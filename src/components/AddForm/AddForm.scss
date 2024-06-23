@@ -1,6 +1,8 @@
 @use '/src/styles/global' as v;
 
 .add_modal {
+  height: fit-content;
+
   form {
     display: flex;
     flex-direction: column;

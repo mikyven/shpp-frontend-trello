@@ -1,0 +1,27 @@
+@use '/src/styles/global' as v;
+
+.select-container {
+  label {
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    select {
+      margin-top: map-get(v.$margins, smallest);
+      height: 30px;
+      width: 100%;
+      font-family: inherit;
+      font-size: map-get(v.$fontSizes, small);
+      box-sizing: border-box;
+      border-radius: v.$sharpBorderRadius;
+      border: 1px solid v.$borderColor;
+      cursor: pointer;
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+}

@@ -7,23 +7,24 @@ export interface IAddForm {
   inputPlaceholder: string;
   btnContent: string;
   handleSubmit: (arg0: string) => Promise<void>;
-  submitOnBlur?: boolean;
 }
 
 interface IInput {
   name: string;
   value: string;
   setValue: (value: string) => void;
+  onSubmit: () => void;
   className?: string | undefined;
   placeholder?: string | undefined;
-  onSubmit: () => void;
   submitOnBlur?: boolean;
+  escapeFunction?: () => void | undefined;
 }
 
 interface ITitleInput {
   title: string;
   editTitle: (newTitle: string) => Promise<void>;
   hideInput: () => void;
+  adaptive?: boolean;
 }
 
 interface IAddList {
@@ -36,8 +37,9 @@ interface IBoardMenu {
 }
 
 interface ICardProps {
-  title: string;
+  data: ICard & { list: { id: number; title: string } };
   onDragStart: (e: DragEvent) => void;
+  onDragOver: (e: DragEvent) => void;
 }
 
 interface IAddCard {
@@ -47,10 +49,9 @@ interface IAddCard {
 interface IListProps {
   id: number;
   title: string;
+  position: number;
   cards: ICard[];
   onRequestMade: () => void;
-  oldCards: ICard[] | null;
-  setOldCards: (cards: ICard[]) => void;
 }
 
 interface ICreateBoardModal {

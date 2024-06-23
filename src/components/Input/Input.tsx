@@ -1,4 +1,4 @@
-import { ReactElement } from 'react';
+import { ReactElement, useRef, useEffect } from 'react';
 import { IInput } from '../../common/interfaces/Props';
 
 export function Input({
@@ -9,18 +9,32 @@ export function Input({
   className = undefined,
   placeholder = undefined,
   submitOnBlur = false,
+  escapeFunction = undefined,
 }: IInput): ReactElement {
   const id = name;
+  const ref = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    ref.current?.select();
+  }, []);
+
+  function onKeyDown(e: React.KeyboardEvent): void {
+    if (e.key === 'Enter') onSubmit();
+    else if (e.key === 'Escape' && escapeFunction) escapeFunction();
+  }
 
   return (
     <input
       {...{ name, id, className, placeholder }}
       type="text"
       autoComplete="off"
-      ref={(input) => input?.focus()}
+      ref={(input) => {
+        input?.focus();
+        ref.current = input;
+      }}
       value={value}
       onChange={(e) => setValue(e.target.value)}
-      onKeyDown={(e) => (e.key === 'Enter' ? onSubmit() : null)}
+      onKeyDown={onKeyDown}
       onBlur={() => (submitOnBlur ? onSubmit() : null)}
     />
   );

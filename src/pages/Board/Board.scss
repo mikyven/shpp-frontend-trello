@@ -1,6 +1,7 @@
 @use '/src/styles/global' as v;
 
 .board {
+  position: sticky;
   user-select: none;
   min-width: 100vw;
   height: 100vh;
@@ -11,7 +12,8 @@
 
   .head {
     position: relative;
-    height: 120px;
+    flex-shrink: 0;
+    height: 150px;
     width: 90%;
     align-self: center;
     display: flex;
@@ -29,9 +31,15 @@
     }
 
     .home_link-btn {
+      padding: 0;
       left: 0;
 
       .home_link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
         color: inherit;
       }
     }
@@ -41,7 +49,9 @@
     }
 
     .title_container {
-      & > * {
+      .board_title,
+      .resize-text,
+      .title_input {
         text-align: center;
         border-radius: v.$primaryBorderRadius;
         padding: map-get(v.$margins, smallest) map-get(v.$margins, main);
@@ -49,6 +59,7 @@
       }
 
       .board_title {
+        height: 50px;
         cursor: pointer;
 
         &:hover {
@@ -56,18 +67,51 @@
         }
       }
 
-      .title_input {
-        width: 350px;
+      .resize-container {
+        height: 60px;
+        border-radius: v.$primaryBorderRadius;
+        padding: 0 map-get(v.$margins, small);
       }
     }
   }
 
   .list_parent {
     margin-top: 30px;
+    height: 100%;
     width: max-content;
     padding: 0 100px;
     display: flex;
     flex-direction: row;
-    gap: 25px;
+
+    .add-list {
+      .add_btn {
+        @include v.mainCreateButton(v.$transparentDark);
+
+        color: white;
+        width: 275px;
+      }
+
+      form {
+        box-sizing: border-box;
+        padding: map-get(v.$margins, small);
+        height: 110px;
+        width: 275px;
+        background-color: v.$light;
+        border-radius: v.$primaryBorderRadius;
+
+        input {
+          height: 45px;
+          padding: inherit;
+          border-radius: v.$sharpBorderRadius;
+        }
+
+        .btn_container {
+          .submit_btn {
+            padding: none;
+            width: 130px;
+          }
+        }
+      }
+    }
   }
 }

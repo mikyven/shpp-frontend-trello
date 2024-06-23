@@ -4,16 +4,34 @@ import { Input } from '../Input/Input';
 import { ITitleInput } from '../../common/interfaces/Props';
 import './TitleInput.scss';
 
-export function TitleInput({ title, editTitle, hideInput }: ITitleInput): ReactElement {
+export function TitleInput({ title, editTitle, hideInput, adaptive = false }: ITitleInput): ReactElement {
   const [value, setValue] = useState(title);
 
   return (
-    <Input
-      name="titleInput"
-      className="title_input"
-      onSubmit={onSubmit(value, editTitle, hideInput)}
-      submitOnBlur
-      {...{ value, setValue }}
-    />
+    <>
+      {adaptive && (
+        <div className="resize-container">
+          <span className="resize-text">{value}</span>
+          <Input
+            name="titleInput"
+            className="title_input"
+            onSubmit={onSubmit(value, editTitle, hideInput)}
+            submitOnBlur
+            escapeFunction={hideInput}
+            {...{ value, setValue }}
+          />
+        </div>
+      )}
+      {!adaptive && (
+        <Input
+          name="titleInput"
+          className="title_input"
+          onSubmit={onSubmit(value, editTitle, hideInput)}
+          submitOnBlur
+          escapeFunction={hideInput}
+          {...{ value, setValue }}
+        />
+      )}
+    </>
   );
 }

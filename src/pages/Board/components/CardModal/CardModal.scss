@@ -1,0 +1,274 @@
+@use '/src/styles/global' as v;
+
+.container {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: auto;
+  z-index: 4;
+
+  .card-modal {
+    position: relative;
+    min-height: 400px;
+    margin: 75px 0;
+    width: 50vw;
+    z-index: 5;
+    background-color: white;
+    border-radius: v.$primaryBorderRadius;
+    padding: 0 24px;
+
+    .modal-head {
+      display: flex;
+      flex-direction: column;
+      color: black;
+      margin: 24px 0;
+
+      .modal-title {
+        margin: 0;
+        font-size: map-get(v.$fontSizes, largest);
+        font-weight: 800;
+
+        & > * {
+          height: 60px;
+          width: 450px;
+        }
+
+        .card-name {
+          display: flex;
+          align-items: center;
+          margin: inherit;
+        }
+
+        input {
+          font-size: inherit;
+          font-weight: inherit;
+        }
+      }
+
+      .list-name {
+        margin: 0 map-get(v.$margins, smallest) 0;
+        font-size: map-get(v.$fontSizes, main);
+      }
+    }
+
+    .close-btn {
+      @include v.closeButton(v.$light);
+
+      font-size: 24px;
+      position: absolute;
+      height: 40px;
+      width: 40px;
+      color: black;
+      top: 24px;
+      right: 24px;
+    }
+
+    .content-container {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: 2fr 1fr;
+      color: black;
+
+      .h {
+        font-weight: 500;
+        font-size: map-get(v.$fontSizes, medium);
+        color: v.$dark;
+      }
+
+      .users {
+        margin-bottom: 24px;
+
+        .users-head {
+          margin-bottom: map-get(v.$margins, small);
+        }
+
+        .users-list {
+          display: flex;
+          gap: map-get(v.$margins, smallest);
+
+          & > * {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            background: hsl(0, 0, 90);
+            color: v.$dark;
+            font-size: map-get(v.$fontSizes, medium);
+            cursor: pointer;
+
+            &:active {
+              color: v.$blue;
+            }
+          }
+
+          div {
+            &:hover {
+              opacity: 0.8;
+            }
+            &:active {
+              opacity: 0.75;
+            }
+          }
+
+          .add-btn {
+            &:hover {
+              filter: brightness(0.95);
+            }
+            &:active {
+              filter: brightness(0.9);
+            }
+          }
+        }
+      }
+
+      .description {
+        margin-bottom: map-get(v.$margins, main);
+
+        .description-head {
+          display: flex;
+          align-items: center;
+          gap: map-get(v.$margins, small);
+          font-weight: 800;
+          font-size: map-get(v.$fontSizes, large);
+          padding-bottom: map-get(v.$margins, small);
+
+          .change-description_btn {
+            @include v.buttonBgEffects(v.$light);
+            border: 1px solid v.$borderColor;
+
+            font-size: map-get(v.$fontSizes, small);
+            height: 40px;
+            width: 100px;
+            border-radius: v.$sharpBorderRadius;
+          }
+        }
+
+        .content {
+          min-height: 20px;
+          $headings: (
+            1: 32px,
+            2: 24px,
+            3: 20px,
+            4: 18px,
+            5: 14px,
+            6: 12px,
+          );
+
+          @each $number, $size in $headings {
+            h#{$number} {
+              font-size: $size;
+            }
+          }
+
+          p,
+          li {
+            font-size: 16px;
+          }
+        }
+
+        .description-textarea {
+          width: 95%;
+          resize: none;
+          padding: map-get(v.$margins, smallest);
+          border-radius: v.$sharpBorderRadius;
+          font-size: map-get(v.$fontSizes, small);
+          font-family: 'Space Mono';
+        }
+      }
+
+      .actions {
+        grid-row: span 2;
+
+        .actions-head {
+          margin-bottom: map-get(v.$margins, main);
+        }
+
+        .button-container {
+          display: flex;
+          flex-direction: column;
+          gap: map-get(v.$margins, small);
+
+          button {
+            position: relative;
+            height: 40px;
+            width: 200px;
+            font-size: map-get(v.$fontSizes, small);
+            font-weight: 500;
+            border-radius: v.$sharpBorderRadius;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .icon {
+              font-size: map-get(v.$fontSizes, medium);
+              position: absolute;
+              left: map-get(v.$margins, small);
+            }
+          }
+
+          .delete_btn {
+            @include v.buttonBgEffects(v.$red);
+
+            color: white;
+          }
+        }
+      }
+    }
+  }
+
+  .modal {
+    position: absolute;
+    width: 250px;
+    z-index: 6;
+    border-radius: v.$primaryBorderRadius;
+    background-color: v.$light;
+    box-shadow: 0 0 1px 1px v.$borderColor;
+    border: 1px solid v.$borderColor;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .title {
+      color: v.$dark;
+      font-size: map-get(v.$fontSizes, medium);
+      font-weight: 600;
+    }
+
+    .select-container {
+      display: grid;
+      width: 200px;
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: repeat(2, 1fr);
+      gap: map-get(v.$margins, main);
+      color: black;
+
+      & > :nth-child(1) {
+        grid-column: span 2;
+      }
+    }
+
+    .move-card_btn,
+    .copy-card_btn {
+      @include v.submitButton;
+
+      margin-top: map-get(v.$margins, main);
+      font-size: map-get(v.$fontSizes, small);
+      height: 40px;
+      width: 140px;
+    }
+  }
+
+  .dark-background {
+    z-index: 4;
+    position: absolute;
+    min-height: 100vh;
+    width: 100vw;
+    background: v.$transparentDark;
+  }
+}

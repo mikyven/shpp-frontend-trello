@@ -1,4 +1,4 @@
-import { ReactElement, useState, useRef, DragEvent, useEffect } from 'react';
+import { ReactElement, useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -6,27 +6,49 @@ import { Card } from '../Card/Card';
 import './List.scss';
 import { TitleInput } from '../../../../components/TitleInput/TitleInput';
 import api from '../../../../api/request';
-import { AddCard } from './AddCard/AddCard';
 import { IListProps } from '../../../../common/interfaces/Props';
-import { ICard } from '../../../../common/interfaces/ICard';
+import { ICard, RequestCard } from '../../../../common/interfaces/ICard';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { AddForm } from '../../../../components/AddForm/AddForm';
+import { setCurCard, setIsDropped, setOriginalCards } from '../../../../store/slices/boardSlice';
 
-export function List({ id, title, cards, onRequestMade, oldCards, setOldCards }: IListProps): ReactElement {
+export function List({ id, title, position, cards, onRequestMade }: IListProps): ReactElement {
+  const { curCard, originalCards, isDropped } = useAppSelector((state) => state.board);
+  const dispatch = useAppDispatch();
   const { boardId } = useParams();
+  const { board } = useAppSelector((state) => state.board);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [canRemoveSlot, setCanRemoveSlot] = useState(false);
   const [curCards, setCurCards] = useState<ICard[]>(cards);
+  const [isDragEnded, setIsDragEnded] = useState(false);
   const slotRef = useRef<HTMLLIElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => setCurCards(cards), [cards]);
 
+  useEffect(() => {
+    if (isDragEnded && !isDropped) setCurCards(cards);
+    setIsDragEnded(false);
+    dispatch(setIsDropped(false));
+  }, [isDragEnded]);
+
   async function editTitle(newTitle: string): Promise<void> {
-    await api.put(`/board/${boardId}/list/${id}`, { title: newTitle });
-    onRequestMade();
+    if (newTitle !== title) {
+      await api.put(`/board/${boardId}/list/${id}`, { title: newTitle });
+      onRequestMade();
+    }
   }
 
   async function deleteList(): Promise<void> {
-    await api.delete(`/board/${boardId}/list/${id}`);
-    onRequestMade();
+    const movedLists = board?.lists
+      .filter((i) => i.position > position)
+      .map((i) => ({ id: i.id, position: i.position - 1 }));
+
+    if (movedLists) {
+      await api.delete(`/board/${boardId}/list/${id}`);
+      await api.put(`/board/${boardId}/list`, movedLists);
+      onRequestMade();
+    }
   }
 
   async function postNewCard(cardTitle: string): Promise<void> {
@@ -34,114 +56,147 @@ export function List({ id, title, cards, onRequestMade, oldCards, setOldCards }:
     onRequestMade();
   }
 
-  async function moveCard(data: ICard[]): Promise<void> {
+  async function moveCard(data: RequestCard[]): Promise<void> {
     await api.put(`/board/${boardId}/card`, data);
     onRequestMade();
   }
-  function onDragStart(e: DragEvent): void {
+
+  function onDragStart(e: React.DragEvent): void {
     const element = e.target as HTMLLIElement;
     const newCards = [...curCards];
-    const card = curCards.find((i) => i.title === element.innerText);
+    const card = curCards[Array.from(element.parentElement?.children || []).indexOf(element)];
     if (card) {
-      const slot = { id: 'slot', title: '', position: card.position };
-      newCards.splice(cards.indexOf(card), 1);
-      newCards.push(slot);
-      element.addEventListener('dragend', () => setCurCards(newCards.map((i) => (i === slot ? card : i))));
+      element.style.outline = 'none';
       element.style.transform = 'rotate(5deg)';
-      e.dataTransfer.setDragImage(element, 100, 10);
-      e.dataTransfer.setData('text/json', JSON.stringify({ id: card.id, title: card.title }));
+      listRef.current?.classList.add('current');
+
+      element.addEventListener('dragend', () => setTimeout(() => setIsDragEnded(true)));
+
+      dispatch(setCurCard(card));
+      newCards[card.position - 1] = { id: 'slot', title: '', position: card.position };
+
       setTimeout(() => {
         setCurCards(newCards);
       });
     }
   }
 
-  function onDragLeave(): void {
-    if (slotRef.current && canRemoveSlot) {
-      const slotPos = curCards.findIndex((i) => i.id === 'slot');
-      const newCards = curCards
-        .map((i) => (i.position > slotPos ? { id: i.id, title: i.title, position: i.position - 1 } : i))
-        .filter((i) => i.id !== 'slot');
-      const newOldCards = newCards.map((i) => Object({ ...i, list_id: id }));
-      setTimeout(() => {
-        setCurCards(newCards);
-        setOldCards(newOldCards);
-      });
-      setCanRemoveSlot(false);
-    }
-  }
-
-  function onDragEnter(e: DragEvent): void {
+  function onDragOver(e: React.DragEvent): void {
     const element = e.target as HTMLElement;
+    const slot = curCards.find((i) => i.id === 'slot');
+    const card =
+      element.className === 'card' && curCards[Array.from(element.parentElement?.children || []).indexOf(element)];
+    let newCards = [...curCards];
 
-    setTimeout(() => {
-      setCanRemoveSlot(true);
-      let newCards = [...curCards];
-      const mousePos = e.clientY - element.getClientRects()[0].top;
-      if (!curCards.find((i) => i.id === 'slot')) {
-        const card = element.innerText ? curCards.find((i) => i.title === element.innerText) : undefined;
-        if (element.classList.contains('card') && card && mousePos < 50) {
-          newCards.push({ id: 'slot', title: '', position: card.position });
-          newCards = newCards.map((i) =>
-            i.position >= card.position && i.id !== 'slot' ? { id: i.id, title: i.title, position: i.position + 1 } : i
-          );
-        }
-        if (element.classList.contains('add_btn')) {
-          newCards.push({ id: 'slot', title: '', position: newCards.length + 1 });
-        }
-        setCurCards(newCards);
-        setCanRemoveSlot(false);
+    if (card && slot) {
+      if (card.position > slot.position) {
+        newCards = newCards.map((i) =>
+          i.position > slot.position && i.position <= card.position ? { ...i, position: i.position - 1 } : i
+        );
+      } else {
+        newCards = newCards.map((i) =>
+          i.position >= card.position && i.position < slot.position ? { ...i, position: i.position + 1 } : i
+        );
       }
-    });
+
+      newCards[slot.position - 1] = { ...slot, position: card.position };
+      setCurCards(newCards.sort((a, b) => a.position - b.position));
+    }
   }
 
-  function onDrop(e: DragEvent): void {
+  function onDragEnter(e: React.DragEvent): void {
     const slot = curCards.find((i) => i.id === 'slot');
-    if (slot) {
-      const card = { ...JSON.parse(e.dataTransfer.getData('text/json')), position: slot.position };
+    if (!slot && containerRef.current?.contains(e.target as HTMLElement)) {
+      listRef.current?.classList.add('current');
+      setCurCards(curCards.concat({ id: 'slot', title: '', position: curCards.length + 1 }));
+    }
+  }
+
+  function onDragLeave(e: React.DragEvent): void {
+    const leftElement = e.target as HTMLElement;
+    const enteredElement = e.relatedTarget as HTMLElement;
+    if (
+      leftElement &&
+      enteredElement &&
+      ((leftElement.className === 'list_container' && !listRef.current?.contains(enteredElement)) ||
+        enteredElement.className === 'board')
+    ) {
+      listRef.current?.classList.remove('current');
+      const slot = curCards.find((i) => i.id === 'slot');
+      let newCards = [...curCards];
+      if (slot) {
+        newCards.splice(slot.position - 1, 1);
+        newCards = newCards.map((i) => (i.position >= slot.position ? { ...i, position: i.position - 1 } : i));
+        setCurCards(newCards);
+        dispatch(setOriginalCards(newCards.map((i) => ({ id: +i.id, position: i.position, list_id: id }))));
+      }
+    }
+  }
+
+  function onDrop(): void {
+    const slot = curCards.find((i) => i.id === 'slot');
+    if (slot && curCard && originalCards) {
       const newCards = [...curCards];
-      newCards.push(card);
+      newCards.push({ ...curCard, position: slot.position });
       newCards.splice(slot.position - 1, 1);
-      setCurCards(newCards);
-      if (oldCards) moveCard(oldCards.concat(newCards.map((i) => Object({ ...i, list_id: id }))));
+      setCurCards(newCards.sort((a, b) => a.position - b.position));
+      dispatch(setIsDropped(true));
+      listRef.current?.classList.remove('current');
+      moveCard(
+        Array.from(
+          new Set(originalCards?.concat(newCards.map((i) => Object({ id: i.id, position: i.position, list_id: id }))))
+        )
+      );
     }
   }
 
   return (
-    <div className="list" onDragLeave={onDragLeave} onDragEnter={onDragEnter}>
-      <div className="list_head">
-        <div className="title_container">
-          {!isEditingTitle && (
-            <h2 className="list_title" onClick={() => setIsEditingTitle(true)}>
-              {title}
-            </h2>
-          )}
-          {isEditingTitle && (
-            <TitleInput title={title} editTitle={editTitle} hideInput={() => setIsEditingTitle(false)} />
-          )}
+    <div
+      className="list_container"
+      ref={containerRef}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={onDrop}
+      onDragEnter={onDragEnter}
+      onDragLeave={onDragLeave}
+    >
+      <div className="list" onDragOver={onDragOver} ref={listRef}>
+        <div className="list_head">
+          <div className="title_container">
+            {!isEditingTitle && (
+              <h2 className="list_title" onClick={() => setTimeout(() => setIsEditingTitle(true))}>
+                {title}
+              </h2>
+            )}
+            {isEditingTitle && (
+              <TitleInput title={title} editTitle={editTitle} hideInput={() => setIsEditingTitle(false)} />
+            )}
+          </div>
+          <button className="delete-list_btn" onClick={deleteList}>
+            {' '}
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
         </div>
-        <button className="delete-list_btn" onClick={deleteList}>
-          {' '}
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
-      </div>
-      <ul className="cards_parent">
-        {curCards
-          .sort((a, b) => a.position - b.position)
-          .map((i) => {
-            if (i.id !== 'slot') return <Card title={i.title} onDragStart={onDragStart} key={i.id} />;
+        <ul className="cards_parent">
+          {curCards.map((i) => {
+            if (i.id === 'slot') return <li key={`${i.id}-${i.position}`} className="card-slot" ref={slotRef} />;
             return (
-              <li
-                key={`${i.id}-${i.position}`}
-                className="card-slot"
-                ref={slotRef}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={onDrop}
+              <Card
+                key={i.id}
+                data={{ ...i, list: { id, title } }}
+                onDragStart={onDragStart}
+                onDragOver={() => false}
               />
             );
           })}
-      </ul>
-      <AddCard postNewCard={postNewCard} />
+        </ul>
+        <AddForm
+          parentClassName="add-card"
+          inputName="addCardInput"
+          inputPlaceholder="Введіть ім'я картки"
+          btnContent="Додати картку"
+          handleSubmit={postNewCard}
+        />
+      </div>
     </div>
   );
 }

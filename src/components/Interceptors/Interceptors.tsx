@@ -27,6 +27,8 @@ export function Interceptors(): ReactElement {
     },
     (error) => {
       if (error instanceof Error) {
+        // eslint-disable-next-line no-console
+        console.log(error);
         toast.error(`${error.message} `, {
           position: 'bottom-left',
           autoClose: 2000,

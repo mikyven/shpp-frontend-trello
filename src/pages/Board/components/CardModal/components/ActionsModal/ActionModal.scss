@@ -1,0 +1,23 @@
+@use '/src/styles/global' as v;
+
+.move-card_modal {
+  height: 250px;
+}
+
+.copy-card_modal {
+  height: 320px;
+
+  .title-input_label {
+    color: black;
+    width: 200px;
+    margin-bottom: map-get(v.$margins, main);
+
+    input {
+      border-radius: v.$sharpBorderRadius;
+      font-size: map-get(v.$fontSizes, medium);
+      padding: map-get(v.$margins, smallest);
+      height: 36px;
+      width: 100%;
+    }
+  }
+}

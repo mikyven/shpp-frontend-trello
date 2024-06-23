@@ -15,7 +15,8 @@ button {
   transition: all 0.1s ease-in;
 }
 
-input {
+input,
+textarea {
   font-family: inherit;
   box-sizing: border-box;
   outline: none;
