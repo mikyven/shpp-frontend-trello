@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { onSubmit } from '../../common/constants/submitHandler';
 import { Input } from '../Input/Input';
-import { IAddForm } from '../../common/interfaces/Props';
+import { AddFormProps } from '../../common/types/props';
 import './AddForm.scss';
 
 export function AddForm({
@@ -12,7 +12,7 @@ export function AddForm({
   inputPlaceholder,
   btnContent,
   handleSubmit,
-}: IAddForm): ReactElement {
+}: AddFormProps): ReactElement {
   const [isShowingForm, setIsShowingForm] = useState(false);
   const [value, setValue] = useState('');
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -24,13 +24,13 @@ export function AddForm({
   const submitFunc = onSubmit(value, handleSubmit, hideForm);
 
   useEffect(() => {
-    const clickListener = (e: MouseEvent): void => {
+    const onMouseDown = (e: MouseEvent): void => {
       const element = e.target as HTMLElement;
-      if (!modalRef.current?.contains(element) && !element.classList.contains(`${parentClassName}_btn`)) submitFunc();
+      if (!modalRef.current?.contains(element)) submitFunc();
     };
 
-    document.addEventListener('click', clickListener);
-    return (): void => document.removeEventListener('click', clickListener);
+    document.addEventListener('mousedown', onMouseDown);
+    return (): void => document.removeEventListener('mousedown', onMouseDown);
   });
 
   return (

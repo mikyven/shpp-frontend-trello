@@ -1,15 +1,14 @@
-import { DragEvent } from 'react';
-import { ICard } from './ICard';
+import { Custom, TCard } from './types';
 
-export interface IAddForm {
+export type AddFormProps = {
   parentClassName: string;
   inputName: string;
   inputPlaceholder: string;
   btnContent: string;
   handleSubmit: (arg0: string) => Promise<void>;
-}
+};
 
-interface IInput {
+export type InputProps = {
   name: string;
   value: string;
   setValue: (value: string) => void;
@@ -17,50 +16,56 @@ interface IInput {
   className?: string | undefined;
   placeholder?: string | undefined;
   submitOnBlur?: boolean;
+  selectContent?: boolean;
   escapeFunction?: () => void | undefined;
-}
+};
 
-interface ITitleInput {
+export type TitleInputProps = {
   title: string;
   editTitle: (newTitle: string) => Promise<void>;
   hideInput: () => void;
   adaptive?: boolean;
-}
+};
 
-interface IAddList {
+export type AddListProps = {
   postNewList: (listTitle: string) => Promise<void>;
-}
+};
 
-interface IBoardMenu {
+export type BoardMenuProps = {
   deleteBoard: () => Promise<void>;
   changeBackground: (newBg: string) => Promise<void>;
-}
+};
 
-interface ICardProps {
-  data: ICard & { list: { id: number; title: string } };
-  onDragStart: (e: DragEvent) => void;
-  onDragOver: (e: DragEvent) => void;
-}
+export type CardProps = {
+  data: TCard & { list: { id: number; title: string } };
+  onDragStart: (e: React.DragEvent) => void;
+};
 
-interface IAddCard {
+export type AddCardProps = {
   postNewCard: (cardTitle: string) => Promise<void>;
-}
+};
 
-interface IListProps {
+export type ListProps = {
   id: number;
   title: string;
   position: number;
-  cards: ICard[];
-  onRequestMade: () => void;
-}
+  cards: TCard[];
+};
 
-interface ICreateBoardModal {
-  postNewBoard: (title: string) => Promise<void>;
-  closeModal: () => void;
-}
-
-interface IHomeBoard {
+export type HomeBoardProps = {
   title: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  custom: Record<string, any>;
-}
+  custom: Custom;
+};
+
+export type CreateBoardModalProps = {
+  postNewBoard: (...args: string[]) => Promise<void>;
+  closeModal: () => void;
+};
+
+export type ActionModalProps = {
+  type: string;
+  name: string;
+  left: string;
+  top: string;
+  closeModal: () => void;
+};

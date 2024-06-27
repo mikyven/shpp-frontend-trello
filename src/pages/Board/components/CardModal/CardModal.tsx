@@ -2,92 +2,27 @@ import { ReactElement, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight, faBan, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
-import { ConnectedProps, connect } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ThunkDispatch } from '@reduxjs/toolkit';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useAppDispatch } from '../../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import {
   changeCardData,
   changeVisibility,
-  changeCardTitle,
-  changeCardDescription,
   deleteCard,
-  moveCard,
+  changeCardValues,
 } from '../../../../store/slices/cardModalSlice';
 import './CardModal.scss';
-import { RootState } from '../../../../store/store';
-import { ICard, RequestCard } from '../../../../common/interfaces/ICard';
 import { Input } from '../../../../components/Input/Input';
 import { onSubmit } from '../../../../common/constants/submitHandler';
-import { IBoard, getBoard } from '../../../../store/slices/boardSlice';
-import api from '../../../../api/request';
-import { validationRegEx } from '../../../../common/constants/validation';
 import { ActionModal } from './components/ActionsModal/ActionModal';
-import { SelectState, resetSelectedData } from '../../../../store/slices/selectSlice';
 
-interface State {
-  data: (ICard & { list: { id: number; title: string } }) | null;
-  board: IBoard | null;
-  selectedData: SelectState;
-}
-
-interface ActionType {
-  type: 'string';
-}
-
-const mapState = (state: RootState): State => {
-  const { data } = state.cardModal;
-  const { board } = state.board;
-  const selectedData = state.select;
-  return { data, board, selectedData };
-};
-
-interface ChangeTitleData {
-  title: string;
-  boardId: string;
-  cardId: number;
-  listId: number;
-}
-
-interface ChangeDescriptionData {
-  description: string;
-  boardId: string;
-  cardId: number;
-  listId: number;
-}
-
-interface DispatchProps {
-  sendNewTitle: (data: ChangeTitleData) => Promise<void>;
-  sendNewDescription: (data: ChangeDescriptionData) => Promise<void>;
-  sendDeletion: (data: { boardId: string; cardId: number; cards: RequestCard[] }) => Promise<void>;
-}
-
-const mapDispatch = (dispatch: ThunkDispatch<RootState, never, ActionType>): DispatchProps => ({
-  sendNewTitle: async (data: ChangeTitleData): Promise<void> => {
-    await dispatch(changeCardTitle(data));
-    await dispatch(getBoard({ id: data.boardId }));
-  },
-  sendNewDescription: async (data: ChangeDescriptionData): Promise<void> => {
-    await dispatch(changeCardDescription(data));
-    await dispatch(getBoard({ id: data.boardId }));
-  },
-  sendDeletion: async (data: { boardId: string; cardId: number; cards: RequestCard[] }): Promise<void> => {
-    await dispatch(deleteCard(data));
-    await api.put(`/board/${data.boardId}/card`, data.cards);
-    await dispatch(getBoard({ id: data.boardId }));
-  },
-});
-
-const connector = connect(mapState, mapDispatch);
-
-type Props = ConnectedProps<typeof connector>;
-
-function CardModal({ data, board, selectedData, sendNewTitle, sendNewDescription, sendDeletion }: Props): ReactElement {
-  const { boardId, cardId } = useParams();
+export function CardModal(): ReactElement {
+  const { boardId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { data } = useAppSelector((state) => state.cardModal);
+  const { board } = useAppSelector((state) => state.board);
   const [isChangingTitle, setIsChangingTitle] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [value, setValue] = useState(data?.title || '');
@@ -113,25 +48,25 @@ function CardModal({ data, board, selectedData, sendNewTitle, sendNewDescription
     navigate(`/board/${boardId}`);
     dispatch(changeVisibility(false));
     dispatch(changeCardData(null));
-    dispatch(resetSelectedData());
   };
 
   const changeTitle = async (title: string): Promise<void> => {
     if (data && boardId && title !== data.title)
-      sendNewTitle({ title, boardId, cardId: +data.id, listId: data.list.id });
+      dispatch(changeCardValues({ boardId, cardId: +data.id, listId: data.list.id, changedValue: { title } }));
   };
 
   const editDescription = async (description: string): Promise<void> => {
     if (data && boardId && description !== data.description) {
-      sendNewDescription({ description, boardId, cardId: +data.id, listId: data.list.id });
+      dispatch(changeCardValues({ boardId, cardId: +data.id, listId: data.list.id, changedValue: { description } }));
     }
   };
 
   useEffect(() => {
     const checkEscape = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') {
-        if (isChangingTitle) {
+        if (isChangingTitle || isEditingDescription) {
           setIsChangingTitle(false);
+          setIsEditingDescription(false);
           setValue(data?.title || '');
           return;
         }
@@ -149,9 +84,9 @@ function CardModal({ data, board, selectedData, sendNewTitle, sendNewDescription
       if (list) {
         const movedCards = list.cards
           .filter((i) => i.position > data.position)
-          .map((i) => ({ id: i.id, position: i.position - 1, list_id: list.id }));
+          .map((i) => ({ id: +i.id, position: i.position - 1, list_id: list.id }));
 
-        await sendDeletion({ boardId, cardId: +data.id, cards: movedCards });
+        await dispatch(deleteCard({ boardId, cardId: +data.id, movedCards }));
       }
       closeModal();
     }
@@ -163,48 +98,6 @@ function CardModal({ data, board, selectedData, sendNewTitle, sendNewDescription
       setActionModalInset({ left: `${rects.left + rects.width + 10}px`, top: `${rects.top}px` });
       setCurrentActionModal(type);
     };
-  }
-
-  async function onCopyBtnClick(): Promise<void> {
-    const { list, position } = selectedData;
-    if (data && board && list && position && validationRegEx.test(value)) {
-      await api
-        .post(`/board/${board.id}/card`, {
-          title: value,
-          position,
-          list_id: list.id,
-          description: data.description,
-        })
-        .then(() => {
-          if (boardId) dispatch(getBoard({ id: boardId }));
-          closeModal();
-        });
-    }
-  }
-
-  async function onMoveCardBtnClick(): Promise<void> {
-    const { board: selectedBoard, list, position, cardsToBeUpdated } = selectedData;
-    if (boardId && cardId && data?.list && selectedBoard && list && position) {
-      const newCards = cardsToBeUpdated.concat(
-        list.cards
-          .filter((i) => i.position >= position)
-          .map((i) => ({ id: i.id, position: i.position + 1, list_id: list.id }))
-      );
-
-      dispatch(
-        moveCard({
-          boardId: [...new Set([boardId, `${selectedBoard.id}`])],
-          cardId,
-          listId: `${list.id}`,
-          position,
-          cards: list.id === data.list.id ? cardsToBeUpdated : newCards,
-          card: data,
-        })
-      ).then(() => {
-        dispatch(changeCardData({ ...data, position, list: { id: list.id, title: list.title } }));
-        closeModal();
-      });
-    }
   }
 
   return (
@@ -222,6 +115,7 @@ function CardModal({ data, board, selectedData, sendNewTitle, sendNewDescription
                 name="card-name"
                 onSubmit={onSubmit(value, changeTitle, () => setIsChangingTitle(false))}
                 submitOnBlur
+                selectContent
                 {...{ value, setValue }}
               />
             )}
@@ -307,7 +201,6 @@ function CardModal({ data, board, selectedData, sendNewTitle, sendNewDescription
           type={currentActionModal}
           name={currentActionModal === 'copy' ? 'Копіювати' : 'Перемістити'}
           closeModal={() => setCurrentActionModal(null)}
-          onSubmit={currentActionModal === 'copy' ? onCopyBtnClick : onMoveCardBtnClick}
           {...actionModalInset}
         />
       )}
@@ -315,5 +208,3 @@ function CardModal({ data, board, selectedData, sendNewTitle, sendNewDescription
     </div>
   );
 }
-
-export default connector(CardModal);

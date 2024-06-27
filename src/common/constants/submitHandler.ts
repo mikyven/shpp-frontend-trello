@@ -3,7 +3,7 @@ import { validationRegEx } from './validation';
 
 export function onSubmit(
   value: string,
-  valueHandler: (value: string) => Promise<void>,
+  valueHandler: (...args: string[]) => Promise<void>,
   hideForm: () => void
 ): () => void {
   return (e?: FormEvent) => {

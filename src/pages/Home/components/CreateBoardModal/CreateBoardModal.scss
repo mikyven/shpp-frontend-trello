@@ -1,16 +1,18 @@
 @use '../../../../styles/global' as v;
 
 .create-board_modal {
-  padding: 0 map-get(v.$margins, smallest) map-get(v.$margins, main);
   position: fixed;
   z-index: 1;
-  height: 160px;
+  top: 125px;
+  height: 270px;
+  width: 265px;
   background-color: white;
   border-radius: v.$primaryBorderRadius;
   border: 1px solid v.$borderColor;
   box-shadow: 0 0 map-get(v.$margins, small) 0 v.$borderColor;
   display: flex;
   flex-direction: column;
+  padding: 0 map-get(v.$margins, small) map-get(v.$margins, main);
 
   .head {
     position: relative;
@@ -41,19 +43,73 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin-left: map-get(v.$margins, smallest);
 
     input,
     button {
-      width: 95%;
+      width: 100%;
     }
 
-    .name_label {
+    label {
       color: black;
       font-weight: 600;
       font-size: map-get(v.$fontSizes, small);
       margin-bottom: map-get(v.$margins, smallest);
+    }
 
+    .background {
+      position: relative;
+      height: fit-content;
+      width: 100%;
+      color: black;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: map-get(v.$margins, small);
+
+      button {
+        border-radius: v.$sharpBorderRadius;
+
+        &:hover {
+          filter: brightness(0.9);
+        }
+
+        &:active {
+          filter: brightness(0.85);
+        }
+
+        &.current {
+          filter: brightness(0.9);
+        }
+      }
+
+      .images-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        margin-bottom: map-get(v.$margins, smallest);
+
+        .image_btn {
+          color: white;
+          height: 45px;
+        }
+      }
+
+      .colors-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+
+        .color_btn {
+          color: white;
+          height: 30px;
+        }
+      }
+    }
+
+    .name_label {
       .required-star {
         color: red;
         font-size: map-get(v.$fontSizes, smallest);

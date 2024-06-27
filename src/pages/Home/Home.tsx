@@ -2,32 +2,24 @@ import { ReactElement, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Board } from './components/Board/Board';
 import { CreateBoardModal } from './components/CreateBoardModal/CreateBoardModal';
-import api from '../../api/request';
 import './Home.scss';
 import { Interceptors } from '../../components/Interceptors/Interceptors';
-
-interface IBoard {
-  id: number;
-  title: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  custom?: any;
-}
+import { createNewBoard, getBoards } from '../../store/slices/boardSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 export function Home(): ReactElement {
+  const dispatch = useAppDispatch();
+  const { boards } = useAppSelector((state) => state.board);
   const [isAddingBoard, setIsAddingBoard] = useState(false);
-  const [boardsList, setBoardsList] = useState<IBoard[]>([]);
-
-  const fetchBoards = async (): Promise<void> => {
-    const { boards }: { boards: IBoard[] } = await api.get('/board/');
-    setBoardsList(boards);
-  };
 
   useEffect(() => {
-    fetchBoards();
+    dispatch(getBoards());
   }, []);
 
-  async function postNewBoard(title: string): Promise<void> {
-    const { id }: { id: number } = await api.post('/board', { title });
+  async function postNewBoard(title: string, background: string): Promise<void> {
+    const { id } = (await dispatch(createNewBoard({ title, background }))).payload as unknown as {
+      id: number;
+    };
     window.location.href = `/board/${id}`;
   }
 
@@ -41,7 +33,7 @@ export function Home(): ReactElement {
           <h1>Мої дошки</h1>
         </section>
         <section className="boards">
-          {boardsList.map((i) => (
+          {boards.map((i) => (
             <Link to={`board/${i.id}`} key={i.id} draggable={false}>
               <Board title={i.title} custom={i.custom} />
             </Link>

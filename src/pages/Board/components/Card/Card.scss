@@ -1,10 +1,14 @@
 @use '../../../../styles/global' as v;
 
-.card {
-  position: relative;
-  height: 50px;
+.card,
+.card-slot {
+  min-height: 50px;
   width: 95%;
   border-radius: v.$primaryBorderRadius;
+}
+
+.card {
+  position: relative;
   border: 1px solid v.$borderColor;
   box-shadow: 0px 1px 2px 0px v.$borderColor;
   background-color: white;
@@ -30,8 +34,5 @@
 
 .card-slot {
   z-index: 0;
-  height: 50px;
-  width: 95%;
   background-color: rgba(#000, 0.1);
-  border-radius: v.$primaryBorderRadius;
 }

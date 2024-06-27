@@ -1,5 +1,5 @@
 import { ReactElement, useRef, useEffect } from 'react';
-import { IInput } from '../../common/interfaces/Props';
+import { InputProps } from '../../common/types/props';
 
 export function Input({
   name,
@@ -9,13 +9,14 @@ export function Input({
   className = undefined,
   placeholder = undefined,
   submitOnBlur = false,
+  selectContent = false,
   escapeFunction = undefined,
-}: IInput): ReactElement {
+}: InputProps): ReactElement {
   const id = name;
   const ref = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    ref.current?.select();
+    if (selectContent) ref.current?.select();
   }, []);
 
   function onKeyDown(e: React.KeyboardEvent): void {

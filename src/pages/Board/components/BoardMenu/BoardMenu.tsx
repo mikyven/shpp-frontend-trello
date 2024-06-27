@@ -2,13 +2,13 @@ import { ReactElement, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis, faChevronLeft, faXmark, faPalette, faMinus } from '@fortawesome/free-solid-svg-icons';
 import { images } from '../../../../assets/images';
+import { colors } from '../../../../assets/colors';
 import './BoardMenu.scss';
-import { IBoardMenu } from '../../../../common/interfaces/Props';
+import { BoardMenuProps } from '../../../../common/types/props';
 
-export function BoardMenu({ deleteBoard, changeBackground }: IBoardMenu): ReactElement {
+export function BoardMenu({ deleteBoard, changeBackground }: BoardMenuProps): ReactElement {
   const [showMenu, setShowMenu] = useState(false);
   const [activeMenuPage, setActiveMenuPage] = useState<string>('main');
-  const colors = ['#242424', '#b30000', '#0059b3', '#009933', '#ff9933', '#884dff', '#66b3ff', '#ff80d5'];
 
   const menuPages: Record<string, Record<string, string>> = {
     main: {
@@ -64,11 +64,11 @@ export function BoardMenu({ deleteBoard, changeBackground }: IBoardMenu): ReactE
           {activeMenuPage === 'changingBg' && (
             <div className="changing-bg_page">
               <p>Кольори</p>
-              <div className="colors_container">
+              <div className="bg_container colors_container">
                 {colors.map((i) => (
                   <button
                     key={`${i}-color`}
-                    className="color_btn"
+                    className="bg_btn color_btn"
                     style={{ backgroundColor: i }}
                     onClick={() => changeBackground(i)}
                   >
@@ -78,11 +78,11 @@ export function BoardMenu({ deleteBoard, changeBackground }: IBoardMenu): ReactE
               </div>
               <hr />
               <p>Зображення</p>
-              <div className="images_container">
+              <div className="bg_container images_container">
                 {images.map((i) => (
                   <button
                     key={`image-${i.id}`}
-                    className="image_btn"
+                    className="bg_btn image_btn"
                     style={{ background: `url(${i.img}) top/cover` }}
                     onClick={() => changeBackground(`url(${i.img}) top/cover`)}
                   >

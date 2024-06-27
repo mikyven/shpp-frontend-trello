@@ -1,85 +1,62 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IList } from '../../common/interfaces/IList';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { TBoard, HomeBoard } from '../../common/types/types';
 import api from '../../api/request';
-import { ICard, RequestCard } from '../../common/interfaces/ICard';
-
-export interface IBoard {
-  id: number;
-  title: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  custom: Record<any, any>;
-  lists: IList[];
-}
-
-export interface IHomeBoard {
-  id: number;
-  title: string;
-  custom: Record<string, unknown>;
-}
 
 export interface BoardState {
-  board: IBoard | null;
-  boards: IHomeBoard[];
-  lists: IList[];
-  originalCards: RequestCard[];
-  curCard: ICard | null;
-  isDropped: boolean;
+  board: TBoard | null;
+  boards: HomeBoard[];
 }
 
 const initialState: BoardState = {
   board: null,
   boards: [],
-  lists: [],
-  originalCards: [],
-  curCard: null,
-  isDropped: false,
 };
+
+export const createNewBoard = createAsyncThunk(
+  'board/createNewBoard',
+  async (data: { title: string; background: string }) => api.put(`/board`, data)
+);
+
+const fetchBoard = async (id: string): Promise<TBoard> => {
+  const board: TBoard = await api.get(`/board/${id}`);
+  return board;
+};
+
+export const updateBoard = createAsyncThunk('board/updateBoard', fetchBoard);
+export const getBoardData = createAsyncThunk('board/getBoardData', fetchBoard);
+
+export const getBoards = createAsyncThunk('board/getBoards', async () => {
+  const { boards }: { boards: HomeBoard[] } = await api.get('/board');
+  return boards;
+});
+
+export const editBoardData = createAsyncThunk(
+  'board/editBoardData',
+  async (data: { id: string; obj: Partial<TBoard> }, thunkAPI) => {
+    const { id, obj } = data;
+    await api.put(`/board/${id}`, obj);
+    thunkAPI.dispatch(updateBoard(id));
+  }
+);
+
+export const deleteBoard = createAsyncThunk('board/deleteBoard', async (id: string) => api.delete(`/board/${id}`));
 
 export const boardSlice = createSlice({
   name: 'board',
   initialState,
-  reducers: {
-    setBoard: (state, action: PayloadAction<IBoard>) => {
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(updateBoard.fulfilled, (state, action) => {
       state.board = action.payload;
-    },
-    setBoards: (state, action: PayloadAction<IHomeBoard[]>) => {
+    });
+    builder.addCase(getBoards.fulfilled, (state, action) => {
       state.boards = action.payload;
-    },
-    setLists: (state, action: PayloadAction<IList[]>) => {
-      state.lists = action.payload;
-    },
-    setOriginalCards: (state, action: PayloadAction<RequestCard[]>) => {
-      state.originalCards = action.payload;
-    },
-    setCurCard: (state, action: PayloadAction<ICard>) => {
-      state.curCard = action.payload;
-    },
-    setIsDropped: (state, action: PayloadAction<boolean>) => {
-      state.isDropped = action.payload;
-    },
+    });
+    builder.addCase(deleteBoard.fulfilled, (state) => {
+      state.board = null;
+      state.boards = [];
+    });
   },
-});
-
-export const { setBoard, setBoards, setLists, setOriginalCards, setCurCard, setIsDropped } = boardSlice.actions;
-
-export const getBoard = createAsyncThunk('board/getBoard', async (data: { id: string }, thunkAPI) => {
-  const { id } = data;
-  const board: IBoard = await api.get(`/board/${id}`);
-  thunkAPI.dispatch(setBoard(board));
-  thunkAPI.dispatch(setLists(board.lists));
-  return board;
-});
-
-export const getBoardData = createAsyncThunk('board/getBoardData', async (data: { id: string }) => {
-  const { id } = data;
-  const board: IBoard = await api.get(`/board/${id}`);
-  return board;
-});
-
-export const getBoards = createAsyncThunk('board/getBoards', async (_, thunkAPI) => {
-  const { boards }: { boards: IHomeBoard[] } = await api.get('/board');
-  thunkAPI.dispatch(setBoards(boards));
-  return boards;
 });
 
 export default boardSlice.reducer;

@@ -5,13 +5,13 @@
 
   height: inherit;
   width: inherit;
-  border-radius: v.$primaryBorderRadius;
+  padding: inherit;
+  border-radius: inherit;
   display: flex;
   align-items: flex-start;
   text-align: start;
   color: white;
   background: none;
-  padding: 0;
 
   .board_title {
     font-weight: 600;
@@ -22,6 +22,7 @@
   .board_bg {
     position: absolute;
     height: inherit;
+    width: inherit;
     border-radius: inherit;
     z-index: -1;
     background: v.$dark;

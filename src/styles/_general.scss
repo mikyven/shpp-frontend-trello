@@ -31,3 +31,24 @@ textarea {
     box-shadow: inset 0 0 0 1px red;
   }
 }
+
+.resize-container {
+  display: inline-block;
+  position: relative;
+
+  .resize-text {
+    display: inline-block;
+    visibility: hidden;
+    white-space: pre;
+  }
+
+  .title_input {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.title_input {
+  font-size: inherit;
+  font-weight: bold;
+}

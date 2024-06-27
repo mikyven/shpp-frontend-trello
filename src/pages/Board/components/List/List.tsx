@@ -4,61 +4,58 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Card } from '../Card/Card';
 import './List.scss';
-import { TitleInput } from '../../../../components/TitleInput/TitleInput';
-import api from '../../../../api/request';
-import { IListProps } from '../../../../common/interfaces/Props';
-import { ICard, RequestCard } from '../../../../common/interfaces/ICard';
+import { ListProps } from '../../../../common/types/props';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { AddForm } from '../../../../components/AddForm/AddForm';
-import { setCurCard, setIsDropped, setOriginalCards } from '../../../../store/slices/boardSlice';
+import { onSubmit } from '../../../../common/constants/submitHandler';
+import { Input } from '../../../../components/Input/Input';
+import {
+  createNewCard,
+  deleteList,
+  editListData,
+  DnDMoveCard,
+  resetData,
+  setCurCard,
+  setIsDropped,
+  setOriginalCards,
+} from '../../../../store/slices/listSlice';
+import { TCard } from '../../../../common/types/types';
 
-export function List({ id, title, position, cards, onRequestMade }: IListProps): ReactElement {
-  const { curCard, originalCards, isDropped } = useAppSelector((state) => state.board);
+export function List({ id, title, position, cards }: ListProps): ReactElement {
   const dispatch = useAppDispatch();
-  const { boardId } = useParams();
   const { board } = useAppSelector((state) => state.board);
+  const { curCard, originalCards, isDropped } = useAppSelector((state) => state.list);
+  const boardId = useParams().boardId || '';
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [curCards, setCurCards] = useState<ICard[]>(cards);
+  const [curCards, setCurCards] = useState<TCard[]>(cards);
   const [isDragEnded, setIsDragEnded] = useState(false);
-  const slotRef = useRef<HTMLLIElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const [value, setValue] = useState(title);
 
   useEffect(() => setCurCards(cards), [cards]);
 
   useEffect(() => {
     if (isDragEnded && !isDropped) setCurCards(cards);
     setIsDragEnded(false);
-    dispatch(setIsDropped(false));
+    dispatch(resetData());
+    listRef.current?.classList.remove('current');
   }, [isDragEnded]);
 
   async function editTitle(newTitle: string): Promise<void> {
     if (newTitle !== title) {
-      await api.put(`/board/${boardId}/list/${id}`, { title: newTitle });
-      onRequestMade();
+      await dispatch(editListData({ boardId, listId: id, obj: { title: newTitle } }));
     }
   }
 
-  async function deleteList(): Promise<void> {
+  async function handleDeletion(): Promise<void> {
     const movedLists = board?.lists
       .filter((i) => i.position > position)
       .map((i) => ({ id: i.id, position: i.position - 1 }));
 
     if (movedLists) {
-      await api.delete(`/board/${boardId}/list/${id}`);
-      await api.put(`/board/${boardId}/list`, movedLists);
-      onRequestMade();
+      dispatch(deleteList({ boardId, listId: id, movedLists }));
     }
-  }
-
-  async function postNewCard(cardTitle: string): Promise<void> {
-    await api.post(`/board/${boardId}/card`, { title: cardTitle, list_id: id, position: cards.length + 1 });
-    onRequestMade();
-  }
-
-  async function moveCard(data: RequestCard[]): Promise<void> {
-    await api.put(`/board/${boardId}/card`, data);
-    onRequestMade();
   }
 
   function onDragStart(e: React.DragEvent): void {
@@ -117,9 +114,9 @@ export function List({ id, title, position, cards, onRequestMade }: IListProps):
     const enteredElement = e.relatedTarget as HTMLElement;
     if (
       leftElement &&
-      enteredElement &&
       ((leftElement.className === 'list_container' && !listRef.current?.contains(enteredElement)) ||
-        enteredElement.className === 'board')
+        enteredElement.className === 'board' ||
+        enteredElement instanceof HTMLHtmlElement)
     ) {
       listRef.current?.classList.remove('current');
       const slot = curCards.find((i) => i.id === 'slot');
@@ -142,13 +139,22 @@ export function List({ id, title, position, cards, onRequestMade }: IListProps):
       setCurCards(newCards.sort((a, b) => a.position - b.position));
       dispatch(setIsDropped(true));
       listRef.current?.classList.remove('current');
-      moveCard(
-        Array.from(
-          new Set(originalCards?.concat(newCards.map((i) => Object({ id: i.id, position: i.position, list_id: id }))))
-        )
+      dispatch(
+        DnDMoveCard({
+          boardId,
+          cards: [
+            ...new Set(
+              originalCards?.concat(newCards.map((i) => Object({ id: i.id, position: i.position, list_id: id })))
+            ),
+          ],
+        })
       );
     }
   }
+
+  const hideTitleInput = (): void => {
+    setIsEditingTitle(false);
+  };
 
   return (
     <div
@@ -168,25 +174,26 @@ export function List({ id, title, position, cards, onRequestMade }: IListProps):
               </h2>
             )}
             {isEditingTitle && (
-              <TitleInput title={title} editTitle={editTitle} hideInput={() => setIsEditingTitle(false)} />
+              <Input
+                name="title_input"
+                className="title_input"
+                onSubmit={onSubmit(value, editTitle, hideTitleInput)}
+                submitOnBlur
+                selectContent
+                escapeFunction={hideTitleInput}
+                {...{ value, setValue }}
+              />
             )}
           </div>
-          <button className="delete-list_btn" onClick={deleteList}>
+          <button className="delete-list_btn" onClick={handleDeletion}>
             {' '}
             <FontAwesomeIcon icon={faTrash} />
           </button>
         </div>
         <ul className="cards_parent">
           {curCards.map((i) => {
-            if (i.id === 'slot') return <li key={`${i.id}-${i.position}`} className="card-slot" ref={slotRef} />;
-            return (
-              <Card
-                key={i.id}
-                data={{ ...i, list: { id, title } }}
-                onDragStart={onDragStart}
-                onDragOver={() => false}
-              />
-            );
+            if (i.id === 'slot') return <li key={`${i.id}-${i.position}`} className="card-slot" />;
+            return <Card key={i.id} data={{ ...i, list: { id, title } }} onDragStart={onDragStart} />;
           })}
         </ul>
         <AddForm
@@ -194,7 +201,14 @@ export function List({ id, title, position, cards, onRequestMade }: IListProps):
           inputName="addCardInput"
           inputPlaceholder="Введіть ім'я картки"
           btnContent="Додати картку"
-          handleSubmit={postNewCard}
+          handleSubmit={async (cardTitle: string) => {
+            dispatch(
+              createNewCard({
+                boardId,
+                card: { title: cardTitle, position: cards.length + 1, list_id: id },
+              })
+            );
+          }}
         />
       </div>
     </div>

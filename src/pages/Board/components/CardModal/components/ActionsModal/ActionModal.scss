@@ -21,3 +21,68 @@
     }
   }
 }
+
+.action_modal {
+  position: absolute;
+  width: 250px;
+  z-index: 6;
+  border-radius: v.$primaryBorderRadius;
+  background-color: v.$light;
+  box-shadow: 0 0 1px 1px v.$borderColor;
+  border: 1px solid v.$borderColor;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .title {
+    color: v.$dark;
+    font-size: map-get(v.$fontSizes, medium);
+    font-weight: 600;
+  }
+
+  .select-container {
+    display: grid;
+    width: 200px;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    gap: map-get(v.$margins, main);
+    color: black;
+
+    & > :nth-child(1) {
+      grid-column: span 2;
+    }
+
+    label {
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+
+      select {
+        margin-top: map-get(v.$margins, smallest);
+        height: 30px;
+        width: 100%;
+        font-family: inherit;
+        font-size: map-get(v.$fontSizes, small);
+        box-sizing: border-box;
+        border-radius: v.$sharpBorderRadius;
+        border: 1px solid v.$borderColor;
+        cursor: pointer;
+
+        &:hover {
+          filter: brightness(0.9);
+        }
+      }
+    }
+  }
+
+  .submit-action_btn {
+    @include v.submitButton;
+
+    margin-top: map-get(v.$margins, main);
+    font-size: map-get(v.$fontSizes, small);
+    height: 40px;
+    width: 140px;
+  }
+}

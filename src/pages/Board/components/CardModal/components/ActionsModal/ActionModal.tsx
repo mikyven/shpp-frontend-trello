@@ -1,40 +1,151 @@
 import { ReactElement, useState, useRef, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../../../../../store/hooks';
 import { Input } from '../../../../../../components/Input/Input';
-import { useAppSelector } from '../../../../../../store/hooks';
-import { Selects } from '../Selects/Selects';
 import './ActionModal.scss';
+import { getBoardData } from '../../../../../../store/slices/boardSlice';
+import { validationRegEx } from '../../../../../../common/constants/validation';
+import { changeCardData, moveCard } from '../../../../../../store/slices/cardModalSlice';
+import { TBoard, TCard, TList, MoveRequestCard } from '../../../../../../common/types/types';
+import { ActionModalProps } from '../../../../../../common/types/props';
+import { createNewCard } from '../../../../../../store/slices/listSlice';
 
-type Props = {
-  type: string;
-  name: string;
-  left: string;
-  top: string;
-  closeModal: () => void;
-  onSubmit: () => Promise<void>;
-};
-
-export function ActionModal({ type, left, top, closeModal, onSubmit, name }: Props): ReactElement {
+export function ActionModal({ type, left, top, closeModal, name }: ActionModalProps): ReactElement {
+  const dispatch = useAppDispatch();
+  const { boards } = useAppSelector((state) => state.board);
   const { data } = useAppSelector((state) => state.cardModal);
-  const [value, setValue] = useState(data?.title || '');
+  const { boardId, cardId } = useParams();
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const [value, setValue] = useState(data?.title || '');
+  const [board, setBoard] = useState<TBoard | null>(null);
+  const [list, setList] = useState<TList | null>(null);
+  const [position, setPosition] = useState<number | null>(null);
+  const [cardsToBeUpdated, setCardsToBeUpdated] = useState<MoveRequestCard[]>([]);
+  const [initialCards, setInitialCards] = useState<TCard[] | null>(null);
+
+  const positions = list?.cards.map((_i, index) => index + 1) || [];
+  if (data?.list.id !== list?.id) positions.push((list?.cards.length || 0) + 1);
+  if (!positions.length) positions[0] = 1;
 
   useEffect(() => {
-    const onClick = (e: MouseEvent): void => {
-      if (
-        !modalRef.current?.contains(e.target as HTMLElement) &&
-        !(e.target as HTMLElement).classList.contains(`${type}-card-element`)
-      )
-        closeModal();
+    const onMouseDown = (e: MouseEvent): void => {
+      if (modalRef.current?.contains(e.target as HTMLElement)) return;
+      closeModal();
     };
-    document.addEventListener('click', onClick);
+    document.addEventListener('mousedown', onMouseDown);
 
     return (): void => {
-      document.removeEventListener('click', onClick);
+      document.removeEventListener('mousedown', onMouseDown);
     };
   });
 
+  const liftCardsAfterRemovedCard = (arr: TCard[], pos: number, list_id: number): void =>
+    setCardsToBeUpdated(
+      arr.filter((i) => i.position > pos).map((i) => ({ id: +i.id, position: i.position - 1, list_id }))
+    );
+
+  const updatePositionsInSameList = (arr: TCard[], oldPos: number, newPos: number, list_id: number): void =>
+    setCardsToBeUpdated(
+      arr
+        .filter((i) => (i.position > oldPos && i.position <= newPos) || (i.position >= newPos && i.position < oldPos))
+        .map((i) => ({ id: +i.id, position: i.position + (newPos > oldPos ? -1 : 1), list_id }))
+    );
+
+  function updateSelectedBoard(id: string): void {
+    if (id && data) {
+      dispatch(getBoardData(id)).then((response) => {
+        const newBoard = response.payload as TBoard;
+        setBoard({ ...newBoard, id: +id });
+
+        const originalList = newBoard.lists.find((i) => i.id === data.list.id);
+        const newList = originalList || newBoard.lists[0];
+
+        if (originalList) {
+          setPosition(data.position);
+          setInitialCards(originalList.cards);
+        } else {
+          setPosition(1);
+          if (initialCards) {
+            liftCardsAfterRemovedCard(initialCards, data.position, data.list.id);
+          }
+        }
+
+        setList(newList);
+      });
+    }
+  }
+
+  useEffect(() => {
+    updateSelectedBoard(boardId || '');
+  }, []);
+
+  const updateList = (id: string): void => {
+    if (board) {
+      const newList = board.lists.find((i) => i.id === +id);
+      if (newList) {
+        setList(newList);
+        setPosition(1);
+      }
+
+      if (data && initialCards) {
+        liftCardsAfterRemovedCard(initialCards, data.position, data.list.id);
+      }
+    }
+  };
+
+  const updatePosition = (newPosition: number): void => {
+    setPosition(newPosition);
+
+    if (data && list && list.id === data.list.id) {
+      updatePositionsInSameList(list.cards, data.position, newPosition, list.id);
+    }
+  };
+
+  async function onCopyBtnClick(): Promise<void> {
+    if (data && board && list && position && boardId && validationRegEx.test(value)) {
+      await dispatch(
+        createNewCard({
+          boardId,
+          card: { title: value, position, list_id: list.id, description: data.description, users: data.users },
+        })
+      );
+      closeModal();
+    }
+  }
+
+  async function onMoveBtnClick(): Promise<void> {
+    if (boardId && cardId && data?.list && board && list && position) {
+      const newCards = cardsToBeUpdated.concat(
+        list.cards
+          .filter((i) => i.position >= position)
+          .map((i) => ({ id: +i.id, position: i.position + 1, list_id: list.id }))
+      );
+
+      const boardIds = [...new Set([boardId, `${board.id}`])];
+
+      await dispatch(
+        moveCard({
+          boardIds,
+          cardId,
+          listId: `${list.id}`,
+          position,
+          cards: list.id === data.list.id ? cardsToBeUpdated : newCards,
+          card: data,
+        })
+      );
+      if (boardIds.length === 1)
+        dispatch(changeCardData({ ...data, position, list: { id: list.id, title: list.title } }));
+      closeModal();
+    }
+  }
+
+  function onSubmit(): void | null {
+    if (type === 'copy') onCopyBtnClick();
+    else onMoveBtnClick();
+  }
+
   return (
-    <div className={`${type}-card_modal modal`} ref={modalRef} style={{ left, top }}>
+    <div className={`${type}-card_modal action_modal`} ref={modalRef} style={{ left, top }}>
       <p className="title">{name} картку</p>
       {type === 'copy' && (
         <label className="title-input_label">
@@ -43,9 +154,39 @@ export function ActionModal({ type, left, top, closeModal, onSubmit, name }: Pro
         </label>
       )}
       <div className="select-container">
-        <Selects />
+        <label>
+          Дошка{' '}
+          <select value={board?.id} onChange={(e) => updateSelectedBoard(e.target.value)}>
+            {boards.map((i) => (
+              <option key={i.id} value={i.id}>
+                {i.title}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Список{' '}
+          <select value={list?.id} onChange={(e) => updateList(e.target.value)}>
+            {board &&
+              board.lists.map((i) => (
+                <option key={i.id} value={i.id}>
+                  {i.title}
+                </option>
+              ))}
+          </select>
+        </label>
+        <label>
+          Позиція{' '}
+          <select value={position || 1} onChange={(e) => updatePosition(+e.target.value)}>
+            {positions?.map((i) => (
+              <option key={i} value={i}>
+                {i}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
-      <button className={`${type}-card_btn`} onClick={onSubmit}>
+      <button className="submit-action_btn" onClick={onSubmit}>
         {name}
       </button>
     </div>

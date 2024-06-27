@@ -18,28 +18,29 @@
   }
 
   .boards {
+    position: relative;
     align-self: center;
     width: 1300px;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
+    row-gap: map-get(v.$margins, large);
     place-items: center;
 
-    & * {
+    .create-board_btn,
+    a {
+      height: 125px;
       width: 225px;
+      padding: 0;
+      border-radius: v.$primaryBorderRadius;
     }
 
     a {
       text-decoration: none;
-      height: 125px;
     }
 
     .create-board_btn {
       @include v.buttonBgEffects(v.$light);
-
-      border-radius: v.$primaryBorderRadius;
       font-size: map-get(v.$fontSizes, small);
-      height: 125px;
-      padding: 0;
     }
   }
 }

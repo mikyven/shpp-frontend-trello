@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Board from './pages/Board/Board';
+import { Board } from './pages/Board/Board';
 import { Home } from './pages/Home/Home';
-import CardModal from './pages/Board/components/CardModal/CardModal';
+import { CardModal } from './pages/Board/components/CardModal/CardModal';
 
 function App(): ReactElement {
   return (

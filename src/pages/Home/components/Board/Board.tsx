@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
 import './Board.scss';
-import { IHomeBoard } from '../../../../common/interfaces/Props';
+import { HomeBoardProps } from '../../../../common/types/props';
 
-export function Board({ title, custom }: IHomeBoard): ReactElement {
+export function Board({ title, custom }: HomeBoardProps): ReactElement {
   return (
     <button className="home_board">
       <p className="board_title">{title}</p>
