@@ -2,11 +2,11 @@ import { ReactElement, useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './CreateBoardModal.scss';
-import { onSubmit } from '../../../../common/constants/submitHandler';
 import { Input } from '../../../../components/Input/Input';
 import { CreateBoardModalProps } from '../../../../common/types/props';
 import { images } from '../../../../assets/images';
 import { colors } from '../../../../assets/colors';
+import { validationRegEx } from '../../../../common/constants/validation';
 
 export function CreateBoardModal({ postNewBoard, closeModal }: CreateBoardModalProps): ReactElement {
   const [isInputEmpty, setIsInputEmpty] = useState(true);
@@ -14,7 +14,7 @@ export function CreateBoardModal({ postNewBoard, closeModal }: CreateBoardModalP
   const [background, setBackground] = useState<string>('');
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  useEffect(() => setIsInputEmpty(!value), [value]);
+  useEffect(() => setIsInputEmpty(!validationRegEx.test(value)), [value]);
 
   useEffect(() => {
     const onMouseDown = (e: MouseEvent): void => {
@@ -34,7 +34,14 @@ export function CreateBoardModal({ postNewBoard, closeModal }: CreateBoardModalP
   });
 
   return (
-    <form className="create-board_modal" ref={formRef} onSubmit={onSubmit(value, postNewBoard, closeModal)}>
+    <form
+      className="create-board_modal"
+      ref={formRef}
+      onSubmit={(e) => {
+        e.preventDefault();
+        postNewBoard(value, background || '');
+      }}
+    >
       <div className="head">
         <h2 className="heading">Створити дошку</h2>
         <button className="close_btn" onClick={closeModal}>
@@ -79,7 +86,7 @@ export function CreateBoardModal({ postNewBoard, closeModal }: CreateBoardModalP
           name="name_input"
           className={`name_input ${isInputEmpty ? 'empty' : ''}`}
           placeholder="Введіть ім'я дошки..."
-          onSubmit={onSubmit(value, postNewBoard, closeModal)}
+          onSubmit={() => null}
           {...{ value, setValue }}
         />
         <button type="submit" className="submit_btn" disabled={isInputEmpty}>

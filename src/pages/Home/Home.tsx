@@ -17,10 +17,10 @@ export function Home(): ReactElement {
   }, []);
 
   async function postNewBoard(title: string, background: string): Promise<void> {
-    const { id } = (await dispatch(createNewBoard({ title, background }))).payload as unknown as {
-      id: number;
-    };
-    window.location.href = `/board/${id}`;
+    const id = await dispatch(createNewBoard({ title, background })).then(
+      (response) => response && response.payload && (response.payload as unknown as { id: number }).id
+    );
+    if (id) window.location.href = `/board/${id}`;
   }
 
   document.title = 'Мої дошки | Trello';

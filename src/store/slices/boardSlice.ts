@@ -14,7 +14,10 @@ const initialState: BoardState = {
 
 export const createNewBoard = createAsyncThunk(
   'board/createNewBoard',
-  async (data: { title: string; background: string }) => api.put(`/board`, data)
+  async (data: { title: string; background: string }) => {
+    const { title, background } = data;
+    return api.post(`/board`, { title, custom: { background } });
+  }
 );
 
 const fetchBoard = async (id: string): Promise<TBoard> => {

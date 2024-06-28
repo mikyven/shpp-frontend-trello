@@ -78,7 +78,7 @@ export function Board(): ReactElement {
       <Interceptors />
       <div className="board" style={{ background }}>
         <div className="head">
-          <button className="home_link-btn">
+          <button className="home_link-btn head-btn">
             <a className="home_link" href="/" draggable={false}>
               {' '}
               <FontAwesomeIcon icon={faHouse} />

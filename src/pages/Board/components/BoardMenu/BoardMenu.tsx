@@ -22,7 +22,7 @@ export function BoardMenu({ deleteBoard, changeBackground }: BoardMenuProps): Re
   return (
     <>
       {!showMenu && (
-        <button className="show-board-menu_btn" onClick={() => setShowMenu(true)}>
+        <button className="show-board-menu_btn head-btn" onClick={() => setShowMenu(true)}>
           {' '}
           <FontAwesomeIcon icon={faEllipsis} />
         </button>
