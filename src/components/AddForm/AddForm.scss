@@ -20,7 +20,7 @@
       align-items: flex-end;
       gap: map-get(v.$margins, smallest);
 
-      & > * {
+      button {
         height: 35px;
       }
 

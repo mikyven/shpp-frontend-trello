@@ -77,7 +77,7 @@ export function Board(): ReactElement {
     <>
       <Interceptors />
       <div className="board" style={{ background }}>
-        <section className="head">
+        <div className="head">
           <button className="home_link-btn">
             <a className="home_link" href="/" draggable={false}>
               {' '}
@@ -108,8 +108,8 @@ export function Board(): ReactElement {
           </div>
 
           <BoardMenu deleteBoard={deleteCurBoard} changeBackground={changeBackground} />
-        </section>
-        <section className="list_parent">
+        </div>
+        <div className="list_parent">
           {lists.map((i) => (
             <List key={i.id} id={i.id} title={i.title} position={i.position} cards={i.cards} />
           ))}
@@ -120,7 +120,7 @@ export function Board(): ReactElement {
             btnContent="Додати список"
             handleSubmit={postNewList}
           />
-        </section>
+        </div>
         {isModalMounted && <CardModal />}
       </div>
     </>

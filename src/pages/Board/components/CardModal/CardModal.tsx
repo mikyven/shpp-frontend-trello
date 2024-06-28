@@ -124,7 +124,7 @@ export function CardModal(): ReactElement {
           <p className="list-name">
             в списку{' '}
             <a
-              className="move-card_link move-card-element"
+              className="move-card_link"
               onClick={(e) => {
                 e.preventDefault();
                 openModal('move')(e);
@@ -139,9 +139,9 @@ export function CardModal(): ReactElement {
           {' '}
           <FontAwesomeIcon icon={faXmark} />
         </button>
-        <div className="content-container">
+        <div className="modal-content">
           <div className="users">
-            <div className="users-head h">Учасники</div>
+            <p className="users-head small-head">Учасники</p>
             <div className="users-list">
               {users.map((i) => (
                 <div key={i.id}>{i.username[0].toUpperCase()}</div>
@@ -178,13 +178,13 @@ export function CardModal(): ReactElement {
             )}
           </div>
           <div className="actions">
-            <div className="actions-head h">Дії</div>
+            <div className="actions-head small-head">Дії</div>
             <div className="button-container">
-              <button className="copy-card_btn copy-card-element" onClick={openModal('copy')}>
+              <button className="copy-card_btn" onClick={openModal('copy')}>
                 <FontAwesomeIcon className="icon" icon={faCopy} />
                 Копіювати
               </button>
-              <button className="move-card_btn move-card-element" onClick={openModal('move')}>
+              <button className="move-card_btn" onClick={openModal('move')}>
                 <FontAwesomeIcon className="icon" icon={faArrowRight} />
                 Перемістити
               </button>

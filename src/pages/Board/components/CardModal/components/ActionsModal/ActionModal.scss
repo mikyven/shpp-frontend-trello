@@ -48,7 +48,7 @@
     gap: map-get(v.$margins, main);
     color: black;
 
-    & > :nth-child(1) {
+    :nth-child(1) {
       grid-column: span 2;
     }
 

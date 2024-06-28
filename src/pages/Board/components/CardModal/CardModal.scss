@@ -32,7 +32,7 @@
         font-size: map-get(v.$fontSizes, largest);
         font-weight: 800;
 
-        & > * {
+        * {
           height: 60px;
           width: 50%;
         }
@@ -69,16 +69,17 @@
       right: map-get(v.$margins, large);
     }
 
-    .content-container {
+    .modal-content {
       display: grid;
       grid-auto-flow: column;
       grid-template-columns: 2fr 1fr;
       color: black;
 
-      .h {
+      .small-head {
         font-weight: 500;
         font-size: map-get(v.$fontSizes, medium);
         color: v.$dark;
+        margin: 0;
       }
 
       .users {

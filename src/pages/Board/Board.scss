@@ -20,7 +20,7 @@
     align-items: center;
     justify-content: center;
 
-    & > button {
+    button {
       @include v.iconButton;
 
       position: absolute;
@@ -75,7 +75,6 @@
   .list_parent {
     margin-top: 30px;
     height: 100%;
-    justify-self: flex-end;
     max-width: 100vw;
     padding: 0 100px;
     display: flex;
@@ -107,7 +106,7 @@
 
         .btn_container {
           .submit_btn {
-            padding: none;
+            padding: 0;
             width: 130px;
           }
         }
