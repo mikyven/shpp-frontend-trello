@@ -1,8 +1,13 @@
 import { ReactElement } from 'react';
 import './Board.scss';
-import { HomeBoardProps } from '../../../../common/types/props';
+import { Custom } from '../../../../common/types/types';
 
-export function Board({ title, custom }: HomeBoardProps): ReactElement {
+type Props = {
+  title: string;
+  custom: Custom;
+};
+
+export function Board({ title, custom }: Props): ReactElement {
   return (
     <button className="home_board">
       <p className="board_title">{title}</p>

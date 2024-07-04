@@ -1,10 +1,18 @@
-import { ReactElement, useEffect, useRef, useState } from 'react';
+import { ReactElement, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { onSubmit } from '../../common/constants/submitHandler';
 import { Input } from '../Input/Input';
-import { AddFormProps } from '../../common/types/props';
 import './AddForm.scss';
+import useClickOutside from '../../hooks/useClickOutside';
+
+type Props = {
+  parentClassName: string;
+  inputName: string;
+  inputPlaceholder: string;
+  btnContent: string;
+  handleSubmit: (value: string) => Promise<void>;
+};
 
 export function AddForm({
   parentClassName,
@@ -12,7 +20,7 @@ export function AddForm({
   inputPlaceholder,
   btnContent,
   handleSubmit,
-}: AddFormProps): ReactElement {
+}: Props): ReactElement {
   const [isShowingForm, setIsShowingForm] = useState(false);
   const [value, setValue] = useState('');
   const modalRef = useRef<HTMLDivElement | null>(null);
@@ -23,15 +31,7 @@ export function AddForm({
 
   const submitFunc = onSubmit(value, handleSubmit, hideForm);
 
-  useEffect(() => {
-    const onMouseDown = (e: MouseEvent): void => {
-      const element = e.target as HTMLElement;
-      if (!modalRef.current?.contains(element)) submitFunc();
-    };
-
-    document.addEventListener('mousedown', onMouseDown);
-    return (): void => document.removeEventListener('mousedown', onMouseDown);
-  });
+  useClickOutside(modalRef, submitFunc);
 
   return (
     <div className={`add_modal ${parentClassName}`} ref={modalRef}>
@@ -42,7 +42,7 @@ export function AddForm({
       )}
       {isShowingForm && (
         <form onSubmit={submitFunc}>
-          <Input name={inputName} placeholder={inputPlaceholder} onSubmit={submitFunc} {...{ value, setValue }} />
+          <Input name={inputName} placeholder={inputPlaceholder} {...{ value, setValue }} />
           <div className="btn_container">
             <button type="submit" className="submit_btn">
               {btnContent}

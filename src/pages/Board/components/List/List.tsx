@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Card } from '../Card/Card';
 import './List.scss';
-import { ListProps } from '../../../../common/types/props';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { AddForm } from '../../../../components/AddForm/AddForm';
 import { onSubmit } from '../../../../common/constants/submitHandler';
@@ -21,17 +20,25 @@ import {
 } from '../../../../store/slices/listSlice';
 import { TCard } from '../../../../common/types/types';
 
-export function List({ id, title, position, cards }: ListProps): ReactElement {
+type Props = {
+  id: number;
+  title: string;
+  position: number;
+  cards: TCard[];
+};
+
+export function List({ id, title, position, cards }: Props): ReactElement {
   const dispatch = useAppDispatch();
   const { board } = useAppSelector((state) => state.board);
   const { curCard, originalCards, isDropped } = useAppSelector((state) => state.list);
-  const boardId = useParams().boardId || '';
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const { boardId } = useParams() as Record<string, string>;
+
+  const [isChangingTitle, setIsChangingTitle] = useState(false);
   const [curCards, setCurCards] = useState<TCard[]>(cards);
   const [isDragEnded, setIsDragEnded] = useState(false);
+  const [titleValue, setTitleValue] = useState(title);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
-  const [value, setValue] = useState(title);
 
   useEffect(() => setCurCards(cards), [cards]);
 
@@ -153,7 +160,7 @@ export function List({ id, title, position, cards }: ListProps): ReactElement {
   }
 
   const hideTitleInput = (): void => {
-    setIsEditingTitle(false);
+    setIsChangingTitle(false);
   };
 
   return (
@@ -168,20 +175,21 @@ export function List({ id, title, position, cards }: ListProps): ReactElement {
       <div className="list" onDragOver={onDragOver} ref={listRef}>
         <div className="list_head">
           <div className="title_container">
-            {!isEditingTitle && (
-              <h2 className="list_title" onClick={() => setTimeout(() => setIsEditingTitle(true))}>
+            {!isChangingTitle && (
+              <h2 className="list_title" onClick={() => setTimeout(() => setIsChangingTitle(true))}>
                 {title}
               </h2>
             )}
-            {isEditingTitle && (
+            {isChangingTitle && (
               <Input
                 name="title_input"
                 className="title_input"
-                onSubmit={onSubmit(value, editTitle, hideTitleInput)}
+                onSubmit={onSubmit(titleValue, editTitle, hideTitleInput)}
                 submitOnBlur
                 selectContent
                 escapeFunction={hideTitleInput}
-                {...{ value, setValue }}
+                value={titleValue}
+                setValue={setTitleValue}
               />
             )}
           </div>

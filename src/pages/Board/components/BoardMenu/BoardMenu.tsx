@@ -4,9 +4,13 @@ import { faEllipsis, faChevronLeft, faXmark, faPalette, faMinus } from '@fortawe
 import { images } from '../../../../assets/images';
 import { colors } from '../../../../assets/colors';
 import './BoardMenu.scss';
-import { BoardMenuProps } from '../../../../common/types/props';
 
-export function BoardMenu({ deleteBoard, changeBackground }: BoardMenuProps): ReactElement {
+type Props = {
+  deleteBoard: () => Promise<void>;
+  changeBackground: (newBg: string) => Promise<void>;
+};
+
+export function BoardMenu({ deleteBoard, changeBackground }: Props): ReactElement {
   const [showMenu, setShowMenu] = useState(false);
   const [activeMenuPage, setActiveMenuPage] = useState<string>('main');
 

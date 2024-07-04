@@ -7,15 +7,23 @@ import { getBoardData } from '../../../../../../store/slices/boardSlice';
 import { validationRegEx } from '../../../../../../common/constants/validation';
 import { changeCardData, moveCard } from '../../../../../../store/slices/cardModalSlice';
 import { TBoard, TCard, TList, MoveRequestCard } from '../../../../../../common/types/types';
-import { ActionModalProps } from '../../../../../../common/types/props';
 import { createNewCard } from '../../../../../../store/slices/listSlice';
+import useClickOutside from '../../../../../../hooks/useClickOutside';
 
-export function ActionModal({ type, left, top, closeModal, name }: ActionModalProps): ReactElement {
+type Props = {
+  type: string;
+  name: string;
+  left: string;
+  top: string;
+  closeModal: () => void;
+};
+
+export function ActionModal({ type, left, top, closeModal, name }: Props): ReactElement {
+  const { boardId, cardId } = useParams();
   const dispatch = useAppDispatch();
   const { boards } = useAppSelector((state) => state.board);
   const { data } = useAppSelector((state) => state.cardModal);
-  const { boardId, cardId } = useParams();
-  const modalRef = useRef<HTMLDivElement | null>(null);
+
   const [value, setValue] = useState(data?.title || '');
   const [board, setBoard] = useState<TBoard | null>(null);
   const [list, setList] = useState<TList | null>(null);
@@ -23,21 +31,16 @@ export function ActionModal({ type, left, top, closeModal, name }: ActionModalPr
   const [cardsToBeUpdated, setCardsToBeUpdated] = useState<MoveRequestCard[]>([]);
   const [initialCards, setInitialCards] = useState<TCard[] | null>(null);
 
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
   const positions = list?.cards.map((_i, index) => index + 1) || [];
-  if (data?.list.id !== list?.id) positions.push((list?.cards.length || 0) + 1);
+
+  if (data?.list.id !== list?.id || type === 'copy') {
+    positions.push((list?.cards.length || 0) + 1);
+  }
   if (!positions.length) positions[0] = 1;
 
-  useEffect(() => {
-    const onMouseDown = (e: MouseEvent): void => {
-      if (modalRef.current?.contains(e.target as HTMLElement)) return;
-      closeModal();
-    };
-    document.addEventListener('mousedown', onMouseDown);
-
-    return (): void => {
-      document.removeEventListener('mousedown', onMouseDown);
-    };
-  });
+  useClickOutside(modalRef, closeModal);
 
   const liftCardsAfterRemovedCard = (arr: TCard[], pos: number, list_id: number): void =>
     setCardsToBeUpdated(
@@ -52,7 +55,7 @@ export function ActionModal({ type, left, top, closeModal, name }: ActionModalPr
     );
 
   function updateSelectedBoard(id: string): void {
-    if (id && data) {
+    if (data) {
       dispatch(getBoardData(id)).then((response) => {
         const newBoard = response.payload as TBoard;
         setBoard({ ...newBoard, id: +id });
@@ -65,6 +68,7 @@ export function ActionModal({ type, left, top, closeModal, name }: ActionModalPr
           setInitialCards(originalList.cards);
         } else {
           setPosition(1);
+
           if (initialCards) {
             liftCardsAfterRemovedCard(initialCards, data.position, data.list.id);
           }
@@ -86,7 +90,6 @@ export function ActionModal({ type, left, top, closeModal, name }: ActionModalPr
         setList(newList);
         setPosition(1);
       }
-
       if (data && initialCards) {
         liftCardsAfterRemovedCard(initialCards, data.position, data.list.id);
       }
@@ -106,7 +109,7 @@ export function ActionModal({ type, left, top, closeModal, name }: ActionModalPr
       await dispatch(
         createNewCard({
           boardId,
-          card: { title: value, position, list_id: list.id, description: data.description, users: data.users },
+          card: { title: value, position, list_id: list.id, description: data.description },
         })
       );
       closeModal();

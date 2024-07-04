@@ -1,23 +1,22 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TBoard, HomeBoard } from '../../common/types/types';
 import api from '../../api/request';
 
 export interface BoardState {
   board: TBoard | null;
   boards: HomeBoard[];
+  isLoading: boolean;
 }
 
 const initialState: BoardState = {
   board: null,
   boards: [],
+  isLoading: false,
 };
 
 export const createNewBoard = createAsyncThunk(
   'board/createNewBoard',
-  async (data: { title: string; background: string }) => {
-    const { title, background } = data;
-    return api.post(`/board`, { title, custom: { background } });
-  }
+  async ({ title, background }: Record<string, string>) => api.post(`/board`, { title, custom: { background } })
 );
 
 const fetchBoard = async (id: string): Promise<TBoard> => {
@@ -28,15 +27,14 @@ const fetchBoard = async (id: string): Promise<TBoard> => {
 export const updateBoard = createAsyncThunk('board/updateBoard', fetchBoard);
 export const getBoardData = createAsyncThunk('board/getBoardData', fetchBoard);
 
-export const getBoards = createAsyncThunk('board/getBoards', async () => {
-  const { boards }: { boards: HomeBoard[] } = await api.get('/board');
-  return boards;
-});
+export const getBoards = createAsyncThunk(
+  'board/getBoards',
+  async () => ((await api.get('/board')) as unknown as { boards: HomeBoard[] }).boards
+);
 
 export const editBoardData = createAsyncThunk(
   'board/editBoardData',
-  async (data: { id: string; obj: Partial<TBoard> }, thunkAPI) => {
-    const { id, obj } = data;
+  async ({ id, obj }: { id: string; obj: Partial<TBoard> }, thunkAPI) => {
     await api.put(`/board/${id}`, obj);
     thunkAPI.dispatch(updateBoard(id));
   }
@@ -47,7 +45,11 @@ export const deleteBoard = createAsyncThunk('board/deleteBoard', async (id: stri
 export const boardSlice = createSlice({
   name: 'board',
   initialState,
-  reducers: {},
+  reducers: {
+    setIsLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(updateBoard.fulfilled, (state, action) => {
       state.board = action.payload;
@@ -61,5 +63,7 @@ export const boardSlice = createSlice({
     });
   },
 });
+
+export const { setIsLoading } = boardSlice.actions;
 
 export default boardSlice.reducer;

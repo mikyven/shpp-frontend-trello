@@ -8,7 +8,7 @@ import remarkGfm from 'remark-gfm';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import {
   changeCardData,
-  changeVisibility,
+  changeModalVisibility,
   deleteCard,
   changeCardValues,
 } from '../../../../store/slices/cardModalSlice';
@@ -23,9 +23,10 @@ export function CardModal(): ReactElement {
   const dispatch = useAppDispatch();
   const { data } = useAppSelector((state) => state.cardModal);
   const { board } = useAppSelector((state) => state.board);
+
   const [isChangingTitle, setIsChangingTitle] = useState(false);
-  const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [value, setValue] = useState(data?.title || '');
+  const [isChangingDescription, setIsChangingDescription] = useState(false);
+  const [titleValue, setTitleValue] = useState(data?.title || '');
   const [descriptionValue, setDescriptionValue] = useState(data?.description || '');
   const cardModalRef = useRef<HTMLDivElement | null>(null);
   const bgRef = useRef<HTMLDivElement | null>(null);
@@ -37,8 +38,9 @@ export function CardModal(): ReactElement {
   ];
 
   useEffect(() => {
-    if (cardModalRef.current && bgRef.current)
+    if (cardModalRef.current && bgRef.current) {
       bgRef.current.style.height = `${cardModalRef.current.clientHeight + 200}px`;
+    }
   });
 
   const [actionModalInset, setActionModalInset] = useState<{ left: string; top: string } | null>(null);
@@ -46,16 +48,17 @@ export function CardModal(): ReactElement {
 
   const closeModal = (): void => {
     navigate(`/board/${boardId}`);
-    dispatch(changeVisibility(false));
+    dispatch(changeModalVisibility(false));
     dispatch(changeCardData(null));
   };
 
   const changeTitle = async (title: string): Promise<void> => {
-    if (data && boardId && title !== data.title)
+    if (data && boardId && title !== data.title) {
       dispatch(changeCardValues({ boardId, cardId: +data.id, listId: data.list.id, changedValue: { title } }));
+    }
   };
 
-  const editDescription = async (description: string): Promise<void> => {
+  const changeDescription = async (description: string): Promise<void> => {
     if (data && boardId && description !== data.description) {
       dispatch(changeCardValues({ boardId, cardId: +data.id, listId: data.list.id, changedValue: { description } }));
     }
@@ -64,10 +67,11 @@ export function CardModal(): ReactElement {
   useEffect(() => {
     const checkEscape = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') {
-        if (isChangingTitle || isEditingDescription) {
+        if (isChangingTitle || isChangingDescription) {
           setIsChangingTitle(false);
-          setIsEditingDescription(false);
-          setValue(data?.title || '');
+          setIsChangingDescription(false);
+          setTitleValue(data?.title || '');
+          setDescriptionValue(data?.description || '');
           return;
         }
         closeModal();
@@ -113,10 +117,11 @@ export function CardModal(): ReactElement {
             {isChangingTitle && (
               <Input
                 name="card-name"
-                onSubmit={onSubmit(value, changeTitle, () => setIsChangingTitle(false))}
+                onSubmit={onSubmit(titleValue, changeTitle, () => setIsChangingTitle(false))}
                 submitOnBlur
                 selectContent
-                {...{ value, setValue }}
+                value={titleValue}
+                setValue={setTitleValue}
               />
             )}
           </div>
@@ -155,24 +160,25 @@ export function CardModal(): ReactElement {
           <div className="description">
             <div className="description-head">
               Опис{' '}
-              <button className="change-description_btn" onClick={() => setIsEditingDescription(!isEditingDescription)}>
+              <button
+                className="change-description_btn"
+                onClick={() => setIsChangingDescription(!isChangingDescription)}
+              >
                 Змінити
               </button>
             </div>
-            {!isEditingDescription && (
+            {!isChangingDescription && (
               <div className="content">
                 <Markdown remarkPlugins={[remarkGfm]}>{descriptionValue}</Markdown>
               </div>
             )}
-            {isEditingDescription && (
+            {isChangingDescription && (
               <textarea
                 className="description-textarea"
                 value={descriptionValue}
                 ref={(e) => e?.focus()}
                 onChange={(e) => setDescriptionValue(e.target.value)}
-                onBlur={onSubmit(descriptionValue, editDescription, () =>
-                  setIsEditingDescription(!isEditingDescription)
-                )}
+                onBlur={onSubmit(descriptionValue, changeDescription, () => setIsChangingDescription(false))}
                 style={{ height: `${descriptionValue.split('\n').length * 24 + 14}px` }}
               />
             )}

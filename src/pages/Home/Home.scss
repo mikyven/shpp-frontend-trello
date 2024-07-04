@@ -9,12 +9,22 @@
   overflow-y: hidden;
 
   .head {
+    position: relative;
     height: 150px;
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
+
+    .log-out_btn {
+      position: absolute;
+      right: 20%;
+      font-size: map-get(v.$fontSizes, medium);
+      border-radius: v.$sharpBorderRadius;
+      height: 40px;
+      width: 100px;
+    }
   }
 
   .boards {

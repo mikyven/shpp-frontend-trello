@@ -1,11 +1,22 @@
 import { ReactElement, useRef, useEffect } from 'react';
-import { InputProps } from '../../common/types/props';
+
+export type InputProps = {
+  name: string;
+  value: string;
+  setValue: (value: string) => void;
+  onSubmit?: (() => void) | undefined;
+  className?: string | undefined;
+  placeholder?: string | undefined;
+  submitOnBlur?: boolean;
+  selectContent?: boolean;
+  escapeFunction?: (() => void) | undefined;
+};
 
 export function Input({
   name,
   value,
   setValue,
-  onSubmit,
+  onSubmit = undefined,
   className = undefined,
   placeholder = undefined,
   submitOnBlur = false,
@@ -20,8 +31,11 @@ export function Input({
   }, []);
 
   function onKeyDown(e: React.KeyboardEvent): void {
-    if (e.key === 'Enter') onSubmit();
-    else if (e.key === 'Escape' && escapeFunction) escapeFunction();
+    if (e.key === 'Enter' && onSubmit) {
+      onSubmit();
+    } else if (e.key === 'Escape' && escapeFunction) {
+      escapeFunction();
+    }
   }
 
   return (
@@ -36,7 +50,7 @@ export function Input({
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onKeyDown={onKeyDown}
-      onBlur={() => (submitOnBlur ? onSubmit() : null)}
+      onBlur={() => (submitOnBlur && onSubmit ? onSubmit() : null)}
     />
   );
 }

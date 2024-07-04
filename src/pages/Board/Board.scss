@@ -81,6 +81,8 @@
     flex-direction: row;
     overflow-x: scroll;
     overflow-y: hidden;
+    box-sizing: border-box;
+    padding-top: map-get(v.$margins, smallest);
 
     .add-list {
       width: 275px;
@@ -101,6 +103,7 @@
         border-radius: v.$primaryBorderRadius;
 
         input {
+          font-size: map-get(v.$fontSizes, medium);
           border-radius: v.$sharpBorderRadius;
         }
 

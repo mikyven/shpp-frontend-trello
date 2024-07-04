@@ -1,51 +1,54 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { Oval } from 'react-loader-spinner';
 import api from '../../api/request';
 import 'react-toastify/dist/ReactToastify.css';
 import './Interceptors.scss';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { setIsLoading } from '../../store/slices/boardSlice';
 
 export function Interceptors(): ReactElement {
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
+  const dispatch = useAppDispatch();
+  const { isLoading } = useAppSelector((state) => state.board);
 
-  if (isLoading && loadingProgress < 100) {
-    setTimeout(() => setLoadingProgress(loadingProgress + 5), 5);
-  }
-
-  api.interceptors.request.use((config) => {
-    if (config.method === 'get') {
-      setIsLoading(true);
-    }
-    return config;
-  });
-
-  api.interceptors.response.use(
-    (response) => {
-      setIsLoading(false);
-      setLoadingProgress(0);
-      return response;
-    },
-    (error) => {
-      if (error instanceof Error) {
-        toast.error(`${error.message} `, {
-          position: 'bottom-left',
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: 'dark',
-          transition: Bounce,
-        });
+  useEffect(() => {
+    api.interceptors.response.use(
+      (response) => {
+        dispatch(setIsLoading(false));
+        return response;
+      },
+      (error) => {
+        if (error instanceof Error) {
+          toast.error(`${error.message} `, {
+            position: 'bottom-left',
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: 'dark',
+            transition: Bounce,
+          });
+        }
       }
-    }
-  );
+    );
+  }, []);
 
   return (
     <>
       {isLoading && (
         <div className="loading">
-          <div className="progress-bar" style={{ width: `${loadingProgress}% ` }} />
+          <Oval
+            visible
+            height="60"
+            width="60"
+            color="#fff"
+            secondaryColor="#fff"
+            strokeWidth={4}
+            ariaLabel="oval-loading"
+            wrapperStyle={{}}
+            wrapperClass=""
+          />
         </div>
       )}
       <ToastContainer

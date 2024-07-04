@@ -4,12 +4,12 @@ import { updateBoard } from './boardSlice';
 import { TCard, MoveRequestCard } from '../../common/types/types';
 
 export interface CardModalState {
-  isMounted: boolean;
+  isModalOpen: boolean;
   data: (TCard & { list: { id: number; title: string } }) | null;
 }
 
 const initialState: CardModalState = {
-  isMounted: false,
+  isModalOpen: false,
   data: null,
 };
 
@@ -81,8 +81,8 @@ export const cardModalSlice = createSlice({
   name: 'cardModal',
   initialState,
   reducers: {
-    changeVisibility: (state, action: PayloadAction<boolean>) => {
-      state.isMounted = action.payload;
+    changeModalVisibility: (state, action: PayloadAction<boolean>) => {
+      state.isModalOpen = action.payload;
     },
     changeCardData: (state, action: PayloadAction<CardModalState['data'] | null>) => {
       state.data = action.payload;
@@ -93,14 +93,14 @@ export const cardModalSlice = createSlice({
       if (state.data) state.data = { ...state.data, ...action.payload };
     });
     builder.addCase(deleteCard.fulfilled, (state) => {
-      state.isMounted = false;
+      state.isModalOpen = false;
     });
     builder.addCase(moveCard.fulfilled, (state, action) => {
-      if (action.payload) state.isMounted = false;
+      if (action.payload) state.isModalOpen = false;
     });
   },
 });
 
-export const { changeVisibility, changeCardData } = cardModalSlice.actions;
+export const { changeModalVisibility, changeCardData } = cardModalSlice.actions;
 
 export default cardModalSlice.reducer;

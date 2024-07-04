@@ -7,9 +7,7 @@
   width: 100%;
   z-index: 10;
   background-color: v.$transparentDark;
-
-  .progress-bar {
-    height: 3px;
-    background-color: v.$blue;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
