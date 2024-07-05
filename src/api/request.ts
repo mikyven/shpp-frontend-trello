@@ -10,12 +10,10 @@ const instance = axios.create({
 });
 
 async function updateToken(): Promise<void> {
-  const response: { result: string; token: string; refreshToken: string } | undefined = await instance.post(
-    '/refresh',
-    {
-      refreshToken: localStorage.getItem('refreshToken'),
-    }
-  );
+  type Response = { result: string; token: string; refreshToken: string } | undefined;
+  const response: Response = await instance.post('/refresh', {
+    refreshToken: localStorage.getItem('refreshToken'),
+  });
   if (response && response.result === 'Authorized') {
     localStorage.setItem('token', response.token);
     localStorage.setItem('refreshToken', response.refreshToken);

@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../api/request';
-import { updateBoard } from './boardSlice';
 import { TCard, MoveRequestCard } from '../../common/types/types';
 
 export interface CardModalState {
@@ -13,67 +12,62 @@ const initialState: CardModalState = {
   data: null,
 };
 
+type ChangeValuesData = {
+  boardId: string;
+  cardId: number;
+  listId: number;
+  changedValue: Partial<TCard>;
+};
+
+type DeleteData = {
+  boardId: string;
+  cardId: number;
+  movedCards: MoveRequestCard[];
+};
+
+type MoveData = {
+  boardIds: string[];
+  cardId: string;
+  listId: string;
+  position: number;
+  cards?: MoveRequestCard[];
+  card?: CardModalState['data'];
+};
+
 export const changeCardValues = createAsyncThunk(
   'cardModal/changeValues',
-  async (
-    data: {
-      boardId: string;
-      cardId: number;
-      listId: number;
-      changedValue: Partial<TCard>;
-    },
-    thunkAPI
-  ) => {
-    const { boardId, cardId, listId, changedValue } = data;
+  async ({ boardId, cardId, listId, changedValue }: ChangeValuesData) => {
     await api.put(`/board/${boardId}/card/${cardId}`, { list_id: listId, ...changedValue });
-    thunkAPI.dispatch(updateBoard(boardId));
     return changedValue;
   }
 );
 
 export const deleteCard = createAsyncThunk(
   'cardModal/deleteCard',
-  async (data: { boardId: string; cardId: number; movedCards: MoveRequestCard[] }, thunkAPI) => {
-    const { boardId, cardId, movedCards } = data;
+  async ({ boardId, cardId, movedCards }: DeleteData) => {
     await api.delete(`/board/${boardId}/card/${cardId}`);
-    await api.put(`/board/${data.boardId}/card`, movedCards);
-    thunkAPI.dispatch(updateBoard(boardId));
+    await api.put(`/board/${boardId}/card`, movedCards);
   }
 );
 
 export const moveCard = createAsyncThunk(
   'cardModal/moveCard',
-  async (
-    data: {
-      boardIds: string[];
-      cardId: string;
-      listId: string;
-      position: number;
-      cards?: MoveRequestCard[];
-      card?: CardModalState['data'];
-    },
-    thunkAPI
-  ) => {
-    const { boardIds, cardId, listId, position, cards, card } = data;
-
+  async ({ boardIds, cardId, listId, position, cards, card }: MoveData) => {
     if (boardIds.length === 1) {
-      const cardsArr = [...(cards || []), { id: +cardId, position, list_id: +listId }];
-      await api.put(`/board/${boardIds[0]}/card`, cardsArr);
-      thunkAPI.dispatch(updateBoard(boardIds[0]));
+      await api.put(`/board/${boardIds[0]}/card`, cards?.concat({ id: +cardId, position, list_id: +listId }));
     } else if (boardIds.length > 1 && card) {
-      const oldCards = cards?.filter((i) => i.list_id !== +listId);
+      const oldListCards = cards?.filter((i) => i.list_id !== +listId);
       await api.delete(`/board/${boardIds[0]}/card/${cardId}`);
-      await api.put(`/board/${boardIds[0]}/card`, oldCards);
+      await api.put(`/board/${boardIds[0]}/card`, oldListCards);
       await api.post(`/board/${boardIds[1]}/card`, {
         title: card.title,
         position,
         list_id: +listId,
         description: card.description,
       });
-      thunkAPI.dispatch(updateBoard(boardIds[0]));
-      return true;
+      return false;
     }
-    return false;
+    return true;
   }
 );
 
@@ -96,7 +90,7 @@ export const cardModalSlice = createSlice({
       state.isModalOpen = false;
     });
     builder.addCase(moveCard.fulfilled, (state, action) => {
-      if (action.payload) state.isModalOpen = false;
+      state.isModalOpen = action.payload;
     });
   },
 });

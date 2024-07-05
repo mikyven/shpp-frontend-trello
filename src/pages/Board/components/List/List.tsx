@@ -11,7 +11,7 @@ import { Input } from '../../../../components/Input/Input';
 import {
   createNewCard,
   deleteList,
-  editListData,
+  editList,
   DnDMoveCard,
   resetData,
   setCurCard,
@@ -51,7 +51,7 @@ export function List({ id, title, position, cards }: Props): ReactElement {
 
   async function editTitle(newTitle: string): Promise<void> {
     if (newTitle !== title) {
-      await dispatch(editListData({ boardId, listId: id, obj: { title: newTitle } }));
+      await dispatch(editList({ boardId, listId: id, obj: { title: newTitle } }));
     }
   }
 
@@ -200,7 +200,9 @@ export function List({ id, title, position, cards }: Props): ReactElement {
         </div>
         <ul className="cards_parent">
           {curCards.map((i) => {
-            if (i.id === 'slot') return <li key={`${i.id}-${i.position}`} className="card-slot" />;
+            if (i.id === 'slot') {
+              return <li key={`${i.id}-${i.position}`} className="card-slot" />;
+            }
             return <Card key={i.id} data={{ ...i, list: { id, title } }} onDragStart={onDragStart} />;
           })}
         </ul>

@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import api from '../../api/request';
-import { updateBoard } from './boardSlice';
 import { TCard, TList, MoveRequestCard, PostRequestCard } from '../../common/types/types';
 
 export interface ListState {
@@ -15,50 +14,53 @@ const initialState: ListState = {
   originalCards: [],
 };
 
+type CreateListData = {
+  boardId: string;
+  title: string;
+  position: number;
+};
+type EditListData = {
+  boardId: string;
+  listId: number;
+  obj: Partial<TList>;
+};
+type DeleteListData = {
+  boardId: string;
+  listId: number;
+  movedLists: { id: number; position: number }[];
+};
+type CreateCardData = {
+  boardId: string;
+  card: PostRequestCard;
+};
+type MoveCardData = {
+  boardId: string;
+  cards: MoveRequestCard[];
+};
+
 export const createNewList = createAsyncThunk(
   'list/createNewList',
-  async (data: { id: string; title: string; position: number }, thunkAPI) => {
-    const { id, title, position } = data;
-    await api.post(`/board/${id}/list`, { title, position });
-    thunkAPI.dispatch(updateBoard(id));
-  }
+  async ({ boardId, title, position }: CreateListData) => api.post(`/board/${boardId}/list`, { title, position })
 );
 
-export const editListData = createAsyncThunk(
-  'list/editListData',
-  async (data: { boardId: string; listId: number; obj: Partial<TList> }, thunkAPI) => {
-    const { boardId, listId, obj } = data;
-    await api.put(`/board/${boardId}/list/${listId}`, obj);
-    thunkAPI.dispatch(updateBoard(boardId));
-  }
+export const editList = createAsyncThunk('list/editList', async ({ boardId, listId, obj }: EditListData) =>
+  api.put(`/board/${boardId}/list/${listId}`, obj)
 );
 
 export const deleteList = createAsyncThunk(
   'list/deleteList',
-  async (data: { boardId: string; listId: number; movedLists: { id: number; position: number }[] }, thunkAPI) => {
-    const { boardId, listId, movedLists } = data;
+  async ({ boardId, listId, movedLists }: DeleteListData) => {
     await api.delete(`/board/${boardId}/list/${listId}`);
     await api.put(`/board/${boardId}/list`, movedLists);
-    thunkAPI.dispatch(updateBoard(boardId));
   }
 );
 
-export const createNewCard = createAsyncThunk(
-  'list/createNewCard',
-  async (data: { boardId: string; card: PostRequestCard }, thunkAPI) => {
-    const { boardId, card } = data;
-    await api.post(`/board/${boardId}/card`, card);
-    thunkAPI.dispatch(updateBoard(boardId));
-  }
+export const createNewCard = createAsyncThunk('list/createNewCard', async ({ boardId, card }: CreateCardData) =>
+  api.post(`/board/${boardId}/card`, card)
 );
 
-export const DnDMoveCard = createAsyncThunk(
-  'list/moveCard',
-  async (data: { boardId: string; cards: MoveRequestCard[] }, thunkAPI) => {
-    const { boardId, cards } = data;
-    await api.put(`/board/${boardId}/card`, cards);
-    thunkAPI.dispatch(updateBoard(boardId));
-  }
+export const DnDMoveCard = createAsyncThunk('list/moveCard', async ({ boardId, cards }: MoveCardData) =>
+  api.put(`/board/${boardId}/card`, cards)
 );
 
 export const listSlice = createSlice({

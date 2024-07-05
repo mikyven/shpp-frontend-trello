@@ -19,9 +19,7 @@ export function Home(): ReactElement {
   }, []);
 
   async function postNewBoard(title: string, background: string): Promise<void> {
-    const id = await dispatch(createNewBoard({ title, background })).then(
-      (response) => response && response.payload && (response.payload as unknown as { id: number }).id
-    );
+    const { id } = (await dispatch(createNewBoard({ title, background }))) as unknown as { id: string };
     if (id) {
       navigate(`/board/${id}`);
     }

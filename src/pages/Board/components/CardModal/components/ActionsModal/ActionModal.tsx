@@ -54,28 +54,26 @@ export function ActionModal({ type, left, top, closeModal, name }: Props): React
         .map((i) => ({ id: +i.id, position: i.position + (newPos > oldPos ? -1 : 1), list_id }))
     );
 
-  function updateSelectedBoard(id: string): void {
+  async function updateSelectedBoard(id: string): Promise<void> {
     if (data) {
-      dispatch(getBoardData(id)).then((response) => {
-        const newBoard = response.payload as TBoard;
-        setBoard({ ...newBoard, id: +id });
+      const newBoard = (await dispatch(getBoardData(id))).payload as TBoard;
+      setBoard({ ...newBoard, id: +id });
 
-        const originalList = newBoard.lists.find((i) => i.id === data.list.id);
-        const newList = originalList || newBoard.lists[0];
+      const originalList = newBoard.lists.find((i) => i.id === data.list.id);
+      const newList = originalList || newBoard.lists[0];
 
-        if (originalList) {
-          setPosition(data.position);
-          setInitialCards(originalList.cards);
-        } else {
-          setPosition(1);
+      if (originalList) {
+        setPosition(data.position);
+        setInitialCards(originalList.cards);
+      } else {
+        setPosition(1);
 
-          if (initialCards) {
-            liftCardsAfterRemovedCard(initialCards, data.position, data.list.id);
-          }
+        if (initialCards) {
+          liftCardsAfterRemovedCard(initialCards, data.position, data.list.id);
         }
+      }
 
-        setList(newList);
-      });
+      setList(newList);
     }
   }
 
@@ -136,8 +134,10 @@ export function ActionModal({ type, left, top, closeModal, name }: Props): React
           card: data,
         })
       );
-      if (boardIds.length === 1)
+      if (boardIds.length === 1) {
         dispatch(changeCardData({ ...data, position, list: { id: list.id, title: list.title } }));
+      }
+
       closeModal();
     }
   }

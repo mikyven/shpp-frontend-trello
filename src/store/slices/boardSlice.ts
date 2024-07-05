@@ -19,10 +19,7 @@ export const createNewBoard = createAsyncThunk(
   async ({ title, background }: Record<string, string>) => api.post(`/board`, { title, custom: { background } })
 );
 
-const fetchBoard = async (id: string): Promise<TBoard> => {
-  const board: TBoard = await api.get(`/board/${id}`);
-  return board;
-};
+const fetchBoard = async (boardId: string): Promise<TBoard> => api.get(`/board/${boardId}`) as unknown as TBoard;
 
 export const updateBoard = createAsyncThunk('board/updateBoard', fetchBoard);
 export const getBoardData = createAsyncThunk('board/getBoardData', fetchBoard);
@@ -34,13 +31,15 @@ export const getBoards = createAsyncThunk(
 
 export const editBoardData = createAsyncThunk(
   'board/editBoardData',
-  async ({ id, obj }: { id: string; obj: Partial<TBoard> }, thunkAPI) => {
-    await api.put(`/board/${id}`, obj);
-    thunkAPI.dispatch(updateBoard(id));
+  async ({ boardId, obj }: { boardId: string; obj: Partial<TBoard> }, thunkAPI) => {
+    await api.put(`/board/${boardId}`, obj);
+    thunkAPI.dispatch(updateBoard(boardId));
   }
 );
 
-export const deleteBoard = createAsyncThunk('board/deleteBoard', async (id: string) => api.delete(`/board/${id}`));
+export const deleteBoard = createAsyncThunk('board/deleteBoard', async (boardId: string) =>
+  api.delete(`/board/${boardId}`)
+);
 
 export const boardSlice = createSlice({
   name: 'board',

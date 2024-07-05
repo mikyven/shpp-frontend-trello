@@ -55,11 +55,15 @@ export function Board(): ReactElement {
   }, []);
 
   const editTitle = async (title: string): Promise<void> => {
-    if (title !== board?.title && boardId) dispatch(editBoardData({ id: boardId, obj: { title } }));
+    if (title !== board?.title && boardId) {
+      dispatch(editBoardData({ boardId, obj: { title } }));
+    }
   };
 
   const changeBackground = async (newBg: string): Promise<void> => {
-    if (boardId) await dispatch(editBoardData({ id: boardId, obj: { custom: { background: newBg } } }));
+    if (boardId) {
+      await dispatch(editBoardData({ boardId, obj: { custom: { background: newBg } } }));
+    }
   };
 
   async function deleteCurBoard(): Promise<void> {
@@ -69,7 +73,7 @@ export function Board(): ReactElement {
 
   async function postNewList(title: string): Promise<void> {
     if (boardId) {
-      dispatch(createNewList({ id: boardId, title, position: lists.length + 1 }));
+      dispatch(createNewList({ boardId, title, position: lists.length + 1 }));
     }
   }
 
