@@ -1,9 +1,10 @@
-import { ReactElement, useState } from 'react';
+import { ReactElement, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis, faChevronLeft, faXmark, faPalette, faMinus } from '@fortawesome/free-solid-svg-icons';
 import { images } from '../../../../assets/images';
 import { colors } from '../../../../assets/colors';
 import './BoardMenu.scss';
+import useClickOutside from '../../../../hooks/useClickOutside';
 
 type Props = {
   deleteBoard: () => Promise<void>;
@@ -11,8 +12,9 @@ type Props = {
 };
 
 export function BoardMenu({ deleteBoard, changeBackground }: Props): ReactElement {
-  const [showMenu, setShowMenu] = useState(false);
+  const [isShowingMenu, setIsShowingMenu] = useState(false);
   const [activeMenuPage, setActiveMenuPage] = useState<string>('main');
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const menuPages: Record<string, Record<string, string>> = {
     main: {
@@ -23,16 +25,23 @@ export function BoardMenu({ deleteBoard, changeBackground }: Props): ReactElemen
     },
   };
 
+  const closeMenu = (): void => {
+    setIsShowingMenu(false);
+    setActiveMenuPage('main');
+  };
+
+  useClickOutside(menuRef, closeMenu);
+
   return (
     <>
-      {!showMenu && (
-        <button className="show-board-menu_btn head-btn" onClick={() => setShowMenu(true)}>
+      {!isShowingMenu && (
+        <button className="show-board-menu_btn head-btn" onClick={() => setIsShowingMenu(true)}>
           {' '}
           <FontAwesomeIcon icon={faEllipsis} />
         </button>
       )}
-      {showMenu && (
-        <div className={`board-menu ${activeMenuPage === 'changingBg' ? 'changing-bg' : ''}`}>
+      {isShowingMenu && (
+        <div ref={menuRef} className={`board-menu ${activeMenuPage === 'changingBg' ? 'changing-bg' : ''}`}>
           <div className="menu-head">
             {activeMenuPage !== 'main' && (
               <button className="return-btn" onClick={() => setActiveMenuPage('main')}>
@@ -44,7 +53,7 @@ export function BoardMenu({ deleteBoard, changeBackground }: Props): ReactElemen
             <button
               className="close-btn"
               onClick={() => {
-                setShowMenu(false);
+                setIsShowingMenu(false);
                 setActiveMenuPage('main');
               }}
             >

@@ -42,7 +42,7 @@ export function AddForm({
       )}
       {isShowingForm && (
         <form onSubmit={submitFunc}>
-          <Input name={inputName} placeholder={inputPlaceholder} {...{ value, setValue }} />
+          <Input value={value} setValue={setValue} name={inputName} placeholder={inputPlaceholder} />
           <div className="btn_container">
             <button type="submit" className="submit_btn">
               {btnContent}

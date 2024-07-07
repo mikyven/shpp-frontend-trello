@@ -40,7 +40,10 @@ export function Input({
 
   return (
     <input
-      {...{ name, id, className, placeholder }}
+      id={id}
+      name={name}
+      className={className}
+      placeholder={placeholder}
       type="text"
       autoComplete="off"
       ref={(input) => {

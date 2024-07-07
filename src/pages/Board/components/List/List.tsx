@@ -140,11 +140,11 @@ export function List({ id, title, position, cards }: Props): ReactElement {
   function onDrop(): void {
     const slot = curCards.find((i) => i.id === 'slot');
     if (slot && curCard && originalCards) {
+      dispatch(setIsDropped(true));
       const newCards = [...curCards];
       newCards.push({ ...curCard, position: slot.position });
       newCards.splice(slot.position - 1, 1);
       setCurCards(newCards.sort((a, b) => a.position - b.position));
-      dispatch(setIsDropped(true));
       listRef.current?.classList.remove('current');
       dispatch(
         DnDMoveCard({

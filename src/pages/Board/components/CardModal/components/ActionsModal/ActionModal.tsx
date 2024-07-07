@@ -34,7 +34,6 @@ export function ActionModal({ type, left, top, closeModal, name }: Props): React
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const positions = list?.cards.map((_i, index) => index + 1) || [];
-
   if (data?.list.id !== list?.id || type === 'copy') {
     positions.push((list?.cards.length || 0) + 1);
   }
@@ -57,6 +56,7 @@ export function ActionModal({ type, left, top, closeModal, name }: Props): React
   async function updateSelectedBoard(id: string): Promise<void> {
     if (data) {
       const newBoard = (await dispatch(getBoardData(id))).payload as TBoard;
+      // detailed board data from backend doesn't have an id in response object
       setBoard({ ...newBoard, id: +id });
 
       const originalList = newBoard.lists.find((i) => i.id === data.list.id);
@@ -153,7 +153,7 @@ export function ActionModal({ type, left, top, closeModal, name }: Props): React
       {type === 'copy' && (
         <label className="title-input_label">
           Назва
-          <Input name={`${type}-title-input`} onSubmit={() => false} {...{ value, setValue }} />
+          <Input value={value} setValue={setValue} name={`${type}-title-input`} onSubmit={() => false} />
         </label>
       )}
       <div className="select-container">

@@ -47,9 +47,9 @@ export function CardModal(): ReactElement {
   const [currentActionModal, setCurrentActionModal] = useState<string | null>(null);
 
   const closeModal = (): void => {
-    navigate(`/board/${boardId}`);
     dispatch(changeModalVisibility(false));
     dispatch(changeCardData(null));
+    navigate(`/board/${boardId}`);
   };
 
   const changeTitle = async (title: string): Promise<void> => {
@@ -74,6 +74,7 @@ export function CardModal(): ReactElement {
           setDescriptionValue(data?.description || '');
           return;
         }
+
         closeModal();
       }
     };
@@ -96,7 +97,7 @@ export function CardModal(): ReactElement {
     }
   }
 
-  function openModal(type: string): (e: React.MouseEvent) => void {
+  function openActionModal(type: string): (e: React.MouseEvent) => void {
     return (e) => {
       const rects = (e.target as HTMLElement).getClientRects()[0];
       const rightSideOffset = rects.left + 40;
@@ -138,7 +139,7 @@ export function CardModal(): ReactElement {
               className="move-card_link"
               onClick={(e) => {
                 e.preventDefault();
-                openModal('move')(e);
+                openActionModal('move')(e);
               }}
               href="#"
             >
@@ -192,11 +193,11 @@ export function CardModal(): ReactElement {
           <div className="actions">
             <div className="actions-head small-head">Дії</div>
             <div className="button-container">
-              <button className="copy-card_btn" onClick={openModal('copy')}>
+              <button className="copy-card_btn" onClick={openActionModal('copy')}>
                 <FontAwesomeIcon className="icon" icon={faCopy} />
                 Копіювати
               </button>
-              <button className="move-card_btn" onClick={openModal('move')}>
+              <button className="move-card_btn" onClick={openActionModal('move')}>
                 <FontAwesomeIcon className="icon" icon={faArrowRight} />
                 Перемістити
               </button>

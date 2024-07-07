@@ -31,10 +31,7 @@ export const getBoards = createAsyncThunk(
 
 export const editBoardData = createAsyncThunk(
   'board/editBoardData',
-  async ({ boardId, obj }: { boardId: string; obj: Partial<TBoard> }, thunkAPI) => {
-    await api.put(`/board/${boardId}`, obj);
-    thunkAPI.dispatch(updateBoard(boardId));
-  }
+  async ({ boardId, obj }: { boardId: string; obj: Partial<TBoard> }) => api.put(`/board/${boardId}`, obj)
 );
 
 export const deleteBoard = createAsyncThunk('board/deleteBoard', async (boardId: string) =>
