@@ -13,9 +13,9 @@ import {
   changeCardValues,
 } from '../../../../store/slices/cardModalSlice';
 import './CardModal.scss';
-import { Input } from '../../../../components/Input/Input';
 import { onSubmit } from '../../../../common/constants/submitHandler';
 import { ActionModal } from './components/ActionsModal/ActionModal';
+import { ResizableInput } from '../../../../components/ResizableInput/ResizableInput';
 
 export function CardModal(): ReactElement {
   const { boardId } = useParams();
@@ -99,7 +99,12 @@ export function CardModal(): ReactElement {
   function openModal(type: string): (e: React.MouseEvent) => void {
     return (e) => {
       const rects = (e.target as HTMLElement).getClientRects()[0];
-      setActionModalInset({ left: `${rects.left + rects.width + 10}px`, top: `${rects.top}px` });
+      const rightSideOffset = rects.left + 40;
+      const leftSideOffset = rects.left - rects.width + 40;
+      setActionModalInset({
+        left: leftSideOffset < 0 ? `${rightSideOffset}px` : `${leftSideOffset}px`,
+        top: `${rects.top + 10}px`,
+      });
       setCurrentActionModal(type);
     };
   }
@@ -115,8 +120,9 @@ export function CardModal(): ReactElement {
               </p>
             )}
             {isChangingTitle && (
-              <Input
+              <ResizableInput
                 name="card-name"
+                className="title_input"
                 onSubmit={onSubmit(titleValue, changeTitle, () => setIsChangingTitle(false))}
                 submitOnBlur
                 selectContent

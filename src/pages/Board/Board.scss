@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-sizing: border-box;
 
   .head {
     position: relative;
@@ -56,6 +57,8 @@
       }
 
       .board_title {
+        display: flex;
+        align-items: center;
         height: 50px;
         cursor: pointer;
 
@@ -76,29 +79,29 @@
     margin-top: 30px;
     height: 100%;
     max-width: 100vw;
-    padding: 0 100px;
+    padding: 0 5vw;
     display: flex;
     flex-direction: row;
     overflow-x: scroll;
     overflow-y: hidden;
     box-sizing: border-box;
-    padding-top: map-get(v.$margins, smallest);
 
     .add-list {
       width: 275px;
+      padding-left: map-get(v.$margins, small);
 
       .add_btn {
         @include v.mainCreateButton(v.$transparentDark);
 
         color: white;
-        width: 100%;
+        width: inherit;
       }
 
       form {
         box-sizing: border-box;
         padding: map-get(v.$margins, small);
         height: 110px;
-        width: 100%;
+        width: inherit;
         background-color: v.$light;
         border-radius: v.$primaryBorderRadius;
 
@@ -112,6 +115,29 @@
             padding: 0;
             width: 130px;
           }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .board {
+    .head {
+      .title_container {
+        * {
+          font-size: 28px;
+          padding-right: map-get(v.$margins, smallest);
+          padding-left: map-get(v.$margins, smallest);
+        }
+
+        .board_title {
+          height: 36px;
+        }
+
+        .resize-container {
+          max-width: 240px;
+          height: 46px;
         }
       }
     }

@@ -104,6 +104,8 @@
   }
 
   .changing-bg_page {
+    width: 90%;
+
     hr {
       width: 100%;
       margin-left: 0;
@@ -137,6 +139,29 @@
       .image_btn {
         height: 100px;
         width: 150px;
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .board-menu {
+    width: 250px;
+
+    &.changing-bg {
+      width: 300px;
+
+      .colors_container {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .images_container {
+        gap: map-get(v.$margins, small);
+
+        .image_btn {
+          height: 85px;
+          width: 130px;
+        }
       }
     }
   }

@@ -7,7 +7,7 @@
 
   form {
     position: relative;
-    width: 500px;
+    width: 450px;
     background-color: v.$light;
     border-radius: v.$primaryBorderRadius;
     color: black;
@@ -15,7 +15,7 @@
     flex-direction: column;
     align-items: center;
     box-sizing: border-box;
-    padding: 12.5%;
+    padding: 12.5% 7.5% 7.5%;
 
     h1 {
       margin: 0 0 map-get(v.$margins, main);
@@ -78,6 +78,44 @@
 
       a {
         color: v.$blue;
+      }
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .auth {
+    form {
+      width: 85vw;
+
+      h1 {
+        font-size: 36px;
+      }
+
+      label {
+        padding-bottom: map-get(v.$margins, small);
+
+        input {
+          height: 40px;
+          font-size: map-get(v.$fontSizes, medium);
+        }
+
+        .show-password-container {
+          margin-bottom: map-get(v.$margins, smallest);
+        }
+      }
+
+      button {
+        height: 40px;
+      }
+
+      .warning {
+        font-size: map-get(v.$fontSizes, smallest);
+      }
+
+      p {
+        text-align: center;
+        font-size: map-get(v.$fontSizes, small);
       }
     }
   }

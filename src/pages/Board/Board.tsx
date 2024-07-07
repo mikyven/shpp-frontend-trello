@@ -34,7 +34,6 @@ export function Board(): ReactElement {
       dispatch(setIsLoading(true));
       const curBoard = (await dispatch(updateBoard(boardId || ''))).payload as TBoard;
       dispatch(getBoards());
-      setTitleValue(curBoard.title);
 
       if (cardId) {
         dispatch(changeModalVisibility(true));
@@ -53,6 +52,8 @@ export function Board(): ReactElement {
       }
     })();
   }, []);
+
+  useEffect(() => setTitleValue(board ? board.title : ''), [board]);
 
   const editTitle = async (title: string): Promise<void> => {
     if (title !== board?.title && boardId) {

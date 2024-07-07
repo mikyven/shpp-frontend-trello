@@ -1,5 +1,7 @@
 import { ReactElement, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { Board } from './components/Board/Board';
 import { CreateBoardModal } from './components/CreateBoardModal/CreateBoardModal';
 import './Home.scss';
@@ -27,18 +29,21 @@ export function Home(): ReactElement {
 
   document.title = 'Мої дошки | Trello';
 
+  const logOut = (): void => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
   return (
     <div className="home">
       <section className="head">
         <h1>Мої дошки</h1>
-        <button
-          className="log-out_btn"
-          onClick={() => {
-            localStorage.clear();
-            navigate('/login');
-          }}
-        >
+        <button className="log-out_btn" onClick={logOut}>
           Вийти
+        </button>
+        <button className="mobile_log-out_btn" onClick={logOut}>
+          {' '}
+          <FontAwesomeIcon icon={faRightFromBracket} />
         </button>
       </section>
       <section className="boards">

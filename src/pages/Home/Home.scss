@@ -2,7 +2,7 @@
 
 .home {
   user-select: none;
-  min-width: 100vw;
+  width: max(100vw, 350px);
   display: flex;
   flex-direction: column;
   overflow-x: auto;
@@ -19,18 +19,22 @@
 
     .log-out_btn {
       position: absolute;
-      right: 20%;
+      right: 5%;
       font-size: map-get(v.$fontSizes, medium);
       border-radius: v.$sharpBorderRadius;
       height: 40px;
       width: 100px;
+    }
+
+    .mobile_log-out_btn {
+      display: none;
     }
   }
 
   .boards {
     position: relative;
     align-self: center;
-    width: 1300px;
+    width: min(100vw, 1300px);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     row-gap: map-get(v.$margins, large);
@@ -51,6 +55,62 @@
     .create-board_btn {
       @include v.buttonBgEffects(v.$light);
       font-size: map-get(v.$fontSizes, small);
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  .home {
+    .boards {
+      width: min(100vw, 850px);
+      grid-template-columns: repeat(3, 1fr);
+
+      .create-board_btn,
+      a {
+        height: 145px;
+        width: 245px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .home {
+    .boards {
+      width: min(100vw, 550px);
+      grid-template-columns: repeat(2, 1fr);
+
+      .create-board_btn,
+      a {
+        height: 150px;
+        width: 260px;
+      }
+    }
+  }
+}
+
+@media (max-width: 555px) {
+  .home {
+    .head {
+      .log-out_btn {
+        display: none;
+      }
+
+      .mobile_log-out_btn {
+        @include v.buttonOpacityEffects;
+
+        right: map-get(v.$margins, main);
+        display: block;
+        position: absolute;
+        font-size: map-get(v.$fontSizes, large);
+        background: none;
+        color: #fff;
+      }
+    }
+
+    .boards {
+      width: 100vw;
+      grid-template-columns: 1fr;
     }
   }
 }
