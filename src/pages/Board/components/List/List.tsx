@@ -30,20 +30,20 @@ type Props = {
 export function List({ id, title, position, cards }: Props): ReactElement {
   const dispatch = useAppDispatch();
   const { board } = useAppSelector((state) => state.board);
-  const { curCard, originalCards, isDropped } = useAppSelector((state) => state.list);
+  const { currentCard, originalCards, isDropped } = useAppSelector((state) => state.list);
   const { boardId } = useParams() as Record<string, string>;
 
   const [isChangingTitle, setIsChangingTitle] = useState(false);
-  const [curCards, setCurCards] = useState<TCard[]>(cards);
+  const [currentCards, setCurrentCards] = useState<TCard[]>(cards);
   const [isDragEnded, setIsDragEnded] = useState(false);
   const [titleValue, setTitleValue] = useState(title);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => setCurCards(cards), [cards]);
+  useEffect(() => setCurrentCards(cards), [cards]);
 
   useEffect(() => {
-    if (isDragEnded && !isDropped) setCurCards(cards);
+    if (isDragEnded && !isDropped) setCurrentCards(cards);
     setIsDragEnded(false);
     dispatch(resetData());
     listRef.current?.classList.remove('current');
@@ -67,8 +67,8 @@ export function List({ id, title, position, cards }: Props): ReactElement {
 
   function onDragStart(e: React.DragEvent): void {
     const element = e.target as HTMLLIElement;
-    const newCards = [...curCards];
-    const card = curCards[Array.from(element.parentElement?.children || []).indexOf(element)];
+    const newCards = [...currentCards];
+    const card = currentCards[Array.from(element.parentElement?.children || []).indexOf(element)];
     if (card) {
       element.style.outline = 'none';
       element.style.transform = 'rotate(5deg)';
@@ -80,17 +80,17 @@ export function List({ id, title, position, cards }: Props): ReactElement {
       newCards[card.position - 1] = { id: 'slot', title: '', position: card.position };
 
       setTimeout(() => {
-        setCurCards(newCards);
+        setCurrentCards(newCards);
       });
     }
   }
 
   function onDragOver(e: React.DragEvent): void {
     const element = e.target as HTMLElement;
-    const slot = curCards.find((i) => i.id === 'slot');
+    const slot = currentCards.find((i) => i.id === 'slot');
     const card =
-      element.className === 'card' && curCards[Array.from(element.parentElement?.children || []).indexOf(element)];
-    let newCards = [...curCards];
+      element.className === 'card' && currentCards[Array.from(element.parentElement?.children || []).indexOf(element)];
+    let newCards = [...currentCards];
 
     if (card && slot) {
       if (card.position > slot.position) {
@@ -104,15 +104,15 @@ export function List({ id, title, position, cards }: Props): ReactElement {
       }
 
       newCards[slot.position - 1] = { ...slot, position: card.position };
-      setCurCards(newCards.sort((a, b) => a.position - b.position));
+      setCurrentCards(newCards.sort((a, b) => a.position - b.position));
     }
   }
 
   function onDragEnter(e: React.DragEvent): void {
-    const slot = curCards.find((i) => i.id === 'slot');
+    const slot = currentCards.find((i) => i.id === 'slot');
     if (!slot && containerRef.current?.contains(e.target as HTMLElement)) {
       listRef.current?.classList.add('current');
-      setCurCards(curCards.concat({ id: 'slot', title: '', position: curCards.length + 1 }));
+      setCurrentCards(currentCards.concat({ id: 'slot', title: '', position: currentCards.length + 1 }));
     }
   }
 
@@ -126,25 +126,25 @@ export function List({ id, title, position, cards }: Props): ReactElement {
         enteredElement instanceof HTMLHtmlElement)
     ) {
       listRef.current?.classList.remove('current');
-      const slot = curCards.find((i) => i.id === 'slot');
-      let newCards = [...curCards];
+      const slot = currentCards.find((i) => i.id === 'slot');
+      let newCards = [...currentCards];
       if (slot) {
         newCards.splice(slot.position - 1, 1);
         newCards = newCards.map((i) => (i.position >= slot.position ? { ...i, position: i.position - 1 } : i));
-        setCurCards(newCards);
+        setCurrentCards(newCards);
         dispatch(setOriginalCards(newCards.map((i) => ({ id: +i.id, position: i.position, list_id: id }))));
       }
     }
   }
 
   function onDrop(): void {
-    const slot = curCards.find((i) => i.id === 'slot');
-    if (slot && curCard && originalCards) {
+    const slot = currentCards.find((i) => i.id === 'slot');
+    if (slot && currentCard && originalCards) {
       dispatch(setIsDropped(true));
-      const newCards = [...curCards];
-      newCards.push({ ...curCard, position: slot.position });
+      const newCards = [...currentCards];
+      newCards.push({ ...currentCard, position: slot.position });
       newCards.splice(slot.position - 1, 1);
-      setCurCards(newCards.sort((a, b) => a.position - b.position));
+      setCurrentCards(newCards.sort((a, b) => a.position - b.position));
       listRef.current?.classList.remove('current');
       dispatch(
         DnDMoveCard({
@@ -199,7 +199,7 @@ export function List({ id, title, position, cards }: Props): ReactElement {
           </button>
         </div>
         <ul className="cards_parent">
-          {curCards.map((i) => {
+          {currentCards.map((i) => {
             if (i.id === 'slot') {
               return <li key={`${i.id}-${i.position}`} className="card-slot" />;
             }
@@ -210,7 +210,7 @@ export function List({ id, title, position, cards }: Props): ReactElement {
           parentClassName="add-card"
           inputName="addCardInput"
           inputPlaceholder="Введіть ім'я картки"
-          btnContent="Додати картку"
+          buttonContent="Додати картку"
           handleSubmit={async (cardTitle: string) => {
             dispatch(
               createNewCard({

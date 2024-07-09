@@ -7,7 +7,7 @@ import api from '../../api/request';
 
 export function Auth(): ReactElement {
   const navigate = useNavigate();
-  const [curPage, setCurPage] = useState('login');
+  const [currentPage, setCurrentPage] = useState('login');
   const [isShowingLoginError, setIsShowingLoginError] = useState(false);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ export function Auth(): ReactElement {
 
   useEffect(() => {
     setIsShowingLoginError(false);
-  }, [curPage]);
+  }, [currentPage]);
 
   async function loginUser(user: { email: string; password: string }): Promise<void> {
     const response: { result: string; token: string; refreshToken: string } | undefined = await api.post(
@@ -42,15 +42,15 @@ export function Auth(): ReactElement {
 
   return (
     <div className="auth">
-      {curPage === 'login' && (
+      {currentPage === 'login' && (
         <LoginPage
           loginUser={loginUser}
           showError={isShowingLoginError}
-          goToRegisterPage={() => setCurPage('register')}
+          goToRegisterPage={() => setCurrentPage('register')}
         />
       )}
-      {curPage === 'register' && (
-        <RegistrationForm registerUser={registerUser} goToLoginPage={() => setCurPage('login')} />
+      {currentPage === 'register' && (
+        <RegistrationForm registerUser={registerUser} goToLoginPage={() => setCurrentPage('login')} />
       )}
     </div>
   );

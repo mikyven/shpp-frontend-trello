@@ -19,7 +19,7 @@ type Props = {
 };
 
 export function ActionModal({ type, left, top, closeModal, name }: Props): ReactElement {
-  const { boardId, cardId } = useParams();
+  const { boardId, cardId } = useParams() as Record<string, string>;
   const dispatch = useAppDispatch();
   const { boards } = useAppSelector((state) => state.board);
   const { data } = useAppSelector((state) => state.cardModal);
@@ -78,7 +78,7 @@ export function ActionModal({ type, left, top, closeModal, name }: Props): React
   }
 
   useEffect(() => {
-    updateSelectedBoard(boardId || '');
+    updateSelectedBoard(boardId);
   }, []);
 
   const updateList = (id: string): void => {
@@ -103,7 +103,7 @@ export function ActionModal({ type, left, top, closeModal, name }: Props): React
   };
 
   async function onCopyBtnClick(): Promise<void> {
-    if (data && board && list && position && boardId && validationRegEx.test(value)) {
+    if (data && board && list && position && validationRegEx.test(value)) {
       await dispatch(
         createNewCard({
           boardId,
@@ -115,7 +115,7 @@ export function ActionModal({ type, left, top, closeModal, name }: Props): React
   }
 
   async function onMoveBtnClick(): Promise<void> {
-    if (boardId && cardId && data?.list && board && list && position) {
+    if (data?.list && board && list && position) {
       const newCards = cardsToBeUpdated.concat(
         list.cards
           .filter((i) => i.position >= position)

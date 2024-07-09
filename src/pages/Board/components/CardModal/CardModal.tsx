@@ -18,7 +18,7 @@ import { ActionModal } from './components/ActionsModal/ActionModal';
 import { ResizableInput } from '../../../../components/ResizableInput/ResizableInput';
 
 export function CardModal(): ReactElement {
-  const { boardId } = useParams();
+  const { boardId } = useParams() as Record<string, string>;
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { data } = useAppSelector((state) => state.cardModal);
@@ -29,7 +29,7 @@ export function CardModal(): ReactElement {
   const [titleValue, setTitleValue] = useState(data?.title || '');
   const [descriptionValue, setDescriptionValue] = useState(data?.description || '');
   const cardModalRef = useRef<HTMLDivElement | null>(null);
-  const bgRef = useRef<HTMLDivElement | null>(null);
+  const backgroundRef = useRef<HTMLDivElement | null>(null);
 
   const users = [
     { id: 1, username: 'A' },
@@ -38,8 +38,8 @@ export function CardModal(): ReactElement {
   ];
 
   useEffect(() => {
-    if (cardModalRef.current && bgRef.current) {
-      bgRef.current.style.height = `${cardModalRef.current.clientHeight + 200}px`;
+    if (cardModalRef.current && backgroundRef.current) {
+      backgroundRef.current.style.height = `${cardModalRef.current.clientHeight + 200}px`;
     }
   });
 
@@ -53,13 +53,13 @@ export function CardModal(): ReactElement {
   };
 
   const changeTitle = async (title: string): Promise<void> => {
-    if (data && boardId && title !== data.title) {
+    if (data && title !== data.title) {
       dispatch(changeCardValues({ boardId, cardId: +data.id, listId: data.list.id, changedValue: { title } }));
     }
   };
 
   const changeDescription = async (description: string): Promise<void> => {
-    if (data && boardId && description !== data.description) {
+    if (data && description !== data.description) {
       dispatch(changeCardValues({ boardId, cardId: +data.id, listId: data.list.id, changedValue: { description } }));
     }
   };
@@ -84,7 +84,7 @@ export function CardModal(): ReactElement {
   });
 
   async function onCardDelete(): Promise<void> {
-    if (data && boardId && board) {
+    if (data && board) {
       const list = board.lists.find((i) => i.id === data.list.id);
       if (list) {
         const movedCards = list.cards
@@ -217,7 +217,7 @@ export function CardModal(): ReactElement {
           {...actionModalInset}
         />
       )}
-      <div className="dark-background" ref={bgRef} onClick={closeModal} />
+      <div className="dark-background" ref={backgroundRef} onClick={closeModal} />
     </div>
   );
 }

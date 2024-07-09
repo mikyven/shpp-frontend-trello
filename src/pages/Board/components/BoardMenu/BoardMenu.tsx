@@ -8,7 +8,7 @@ import useClickOutside from '../../../../hooks/useClickOutside';
 
 type Props = {
   deleteBoard: () => Promise<void>;
-  changeBackground: (newBg: string) => Promise<void>;
+  changeBackground: (newBackground: string) => Promise<void>;
 };
 
 export function BoardMenu({ deleteBoard, changeBackground }: Props): ReactElement {

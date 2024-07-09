@@ -32,7 +32,7 @@ export function Board(): ReactElement {
   useEffect(() => {
     (async (): Promise<void> => {
       dispatch(setIsLoading(true));
-      const curBoard = (await dispatch(updateBoard(boardId || ''))).payload as TBoard;
+      const currentBoard = (await dispatch(updateBoard(boardId || ''))).payload as TBoard;
       dispatch(getBoards());
 
       if (cardId) {
@@ -40,8 +40,8 @@ export function Board(): ReactElement {
 
         let card: TCard | null = null;
         const list =
-          curBoard &&
-          curBoard.lists.find((i) => {
+          currentBoard &&
+          currentBoard.lists.find((i) => {
             card = i.cards.find((j) => j.id === +cardId) as TCard;
             return card;
           });
@@ -56,27 +56,10 @@ export function Board(): ReactElement {
   useEffect(() => setTitleValue(board ? board.title : ''), [board]);
 
   const editTitle = async (title: string): Promise<void> => {
-    if (title !== board?.title && boardId) {
+    if (title !== board?.title) {
       dispatch(editBoardData({ boardId, obj: { title } }));
     }
   };
-
-  const changeBackground = async (newBg: string): Promise<void> => {
-    if (boardId) {
-      await dispatch(editBoardData({ boardId, obj: { custom: { background: newBg } } }));
-    }
-  };
-
-  async function deleteCurBoard(): Promise<void> {
-    await dispatch(deleteBoard(boardId || ''));
-    navigate('/');
-  }
-
-  async function postNewList(title: string): Promise<void> {
-    if (boardId) {
-      dispatch(createNewList({ boardId, title, position: lists.length + 1 }));
-    }
-  }
 
   const hideTitleInput = (): void => {
     setIsChangingTitle(false);
@@ -113,7 +96,15 @@ export function Board(): ReactElement {
           )}
         </div>
 
-        <BoardMenu deleteBoard={deleteCurBoard} changeBackground={changeBackground} />
+        <BoardMenu
+          deleteBoard={async () => {
+            await dispatch(deleteBoard(boardId || ''));
+            navigate('/');
+          }}
+          changeBackground={async (newBackground: string) => {
+            await dispatch(editBoardData({ boardId, obj: { custom: { background: newBackground } } }));
+          }}
+        />
       </div>
       <div className="list_parent">
         {lists.map((i) => (
@@ -123,8 +114,10 @@ export function Board(): ReactElement {
           parentClassName="add-list"
           inputName="addListInput"
           inputPlaceholder="Введіть ім'я списку..."
-          btnContent="Додати список"
-          handleSubmit={postNewList}
+          buttonContent="Додати список"
+          handleSubmit={async (title: string): Promise<void> => {
+            await dispatch(createNewList({ boardId, title, position: lists.length + 1 }));
+          }}
         />
       </div>
       {isModalOpen && <CardModal />}

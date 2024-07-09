@@ -3,13 +3,13 @@ import api from '../../api/request';
 import { TCard, TList, MoveRequestCard, PostRequestCard } from '../../common/types/types';
 
 export interface ListState {
-  curCard: TCard | null;
+  currentCard: TCard | null;
   isDropped: boolean;
   originalCards: MoveRequestCard[];
 }
 
 const initialState: ListState = {
-  curCard: null,
+  currentCard: null,
   isDropped: false,
   originalCards: [],
 };
@@ -68,7 +68,7 @@ export const listSlice = createSlice({
   initialState,
   reducers: {
     setCurCard: (state, action: PayloadAction<TCard>) => {
-      state.curCard = action.payload;
+      state.currentCard = action.payload;
     },
     setIsDropped: (state, action: PayloadAction<boolean>) => {
       state.isDropped = action.payload;
@@ -77,7 +77,7 @@ export const listSlice = createSlice({
       state.originalCards = action.payload;
     },
     resetData: (state) => {
-      state.curCard = null;
+      state.currentCard = null;
       state.isDropped = false;
       state.originalCards = [];
     },

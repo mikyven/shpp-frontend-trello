@@ -10,7 +10,7 @@ type Props = {
   parentClassName: string;
   inputName: string;
   inputPlaceholder: string;
-  btnContent: string;
+  buttonContent: string;
   handleSubmit: (value: string) => Promise<void>;
 };
 
@@ -18,7 +18,7 @@ export function AddForm({
   parentClassName,
   inputName,
   inputPlaceholder,
-  btnContent,
+  buttonContent,
   handleSubmit,
 }: Props): ReactElement {
   const [isShowingForm, setIsShowingForm] = useState(false);
@@ -37,7 +37,7 @@ export function AddForm({
     <div className={`add_modal ${parentClassName}`} ref={modalRef}>
       {!isShowingForm && (
         <button className={`add_btn ${parentClassName}_btn`} onClick={() => setIsShowingForm(true)}>
-          + {btnContent}
+          + {buttonContent}
         </button>
       )}
       {isShowingForm && (
@@ -45,7 +45,7 @@ export function AddForm({
           <Input value={value} setValue={setValue} name={inputName} placeholder={inputPlaceholder} />
           <div className="btn_container">
             <button type="submit" className="submit_btn">
-              {btnContent}
+              {buttonContent}
             </button>
             <button type="button" className="close_btn" onClick={hideForm}>
               {' '}
