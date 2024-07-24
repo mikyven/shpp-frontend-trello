@@ -9,7 +9,11 @@ const instance = axios.create({
   },
 });
 
-async function updateToken(): Promise<void> {
+export const updateToken = (): void => {
+  instance.defaults.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
+};
+
+async function refreshToken(): Promise<void> {
   type Response = { result: string; token: string; refreshToken: string } | undefined;
   const response: Response = await instance.post('/refresh', {
     refreshToken: localStorage.getItem('refreshToken'),
@@ -35,16 +39,11 @@ instance.interceptors.request.use((request) => {
 instance.interceptors.response.use(
   (res) => res.data,
   (error) => {
-    if (error.response.status === 401 && error.config.url !== '/login') {
-      if (localStorage.getItem('token') === null) {
+    if (error.response.status === 401 && localStorage.getItem('token')) {
+      refreshToken().catch(() => {
+        localStorage.clear();
         window.location.href = '/login';
-      } else
-        updateToken().catch(() => {
-          localStorage.clear();
-          window.location.href = '/login';
-        });
-    } else if ([403, 404].includes(error.response.status)) {
-      window.location.href = '/';
+      });
     }
   }
 );

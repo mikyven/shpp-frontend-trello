@@ -1,13 +1,13 @@
 import { ReactElement, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PasswordStrengthBar, checkPasswordStrength } from '../PasswordStrengthBar/PasswordStrengthBar';
+import { emailRegEx } from '../../../../common/constants/regex';
+import { registerUser } from '../../../../store/slices/authSlice';
+import { useAppDispatch } from '../../../../store/hooks';
 
-export function RegistrationForm({
-  registerUser,
-  goToLoginPage,
-}: {
-  registerUser: (user: { email: string; password: string }) => Promise<void>;
-  goToLoginPage: () => void;
-}): ReactElement {
+export function RegisterPage(): ReactElement {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [repeatedPassword, setRepeatedPassword] = useState('');
@@ -16,7 +16,6 @@ export function RegistrationForm({
   const [isShowingRepeatedPasswordWarning, setIsShowingRepeatedPasswordWarning] = useState(false);
 
   const passwordStrength = checkPasswordStrength(password);
-  const emailRegEx = /^\w+@[a-zA-Z_]+\.[a-zA-Z_]+$/;
 
   const isPasswordSafe = passwordStrength.value > 1;
   const isPasswordRepeatedCorrectly = repeatedPassword === password;
@@ -48,7 +47,7 @@ export function RegistrationForm({
         <input type="password" value={repeatedPassword} onChange={(e) => setRepeatedPassword(e.target.value)} />
         {isShowingRepeatedPasswordWarning && <div className="warning">Паролі не збігаються!</div>}
       </label>
-      <button onClick={() => registerUser({ email, password })} disabled={isButtonDisabled}>
+      <button onClick={() => dispatch(registerUser({ email, password }))} disabled={isButtonDisabled}>
         Зареєструватись
       </button>
       <p>
@@ -57,7 +56,7 @@ export function RegistrationForm({
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            goToLoginPage();
+            navigate('/login');
           }}
         >
           Увійти

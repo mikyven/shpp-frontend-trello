@@ -1,5 +1,5 @@
 import { FormEvent } from 'react';
-import { validationRegEx } from './validation';
+import { validationRegEx } from './regex';
 
 export function onSubmit(
   value: string,

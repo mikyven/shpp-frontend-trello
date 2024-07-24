@@ -1,16 +1,15 @@
 import { ReactElement, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../../../store/hooks';
+import { loginUser } from '../../../../store/slices/authSlice';
 
-type Props = {
-  loginUser: (user: { email: string; password: string }) => Promise<void>;
-  showError: boolean;
-  goToRegisterPage: () => void;
-};
-
-export function LoginPage({ loginUser, showError, goToRegisterPage }: Props): ReactElement {
+export function LoginPage(): ReactElement {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isShowingPassword, setIsShowingPassword] = useState(false);
-
+  const [isShowingLoginError, setIsShowingLoginError] = useState(false);
   return (
     <form className="login-form" onSubmit={(e) => e.preventDefault()}>
       <h1>Вхід</h1>
@@ -25,9 +24,19 @@ export function LoginPage({ loginUser, showError, goToRegisterPage }: Props): Re
           <input type="checkbox" onChange={(e) => setIsShowingPassword(e.target.checked)} />
           Показувати пароль
         </label>
-        {showError && <div className="warning">Користувача з такою адресою чи паролем не знайдено</div>}
+        {isShowingLoginError && <div className="warning">Користувача з такою адресою чи паролем не знайдено</div>}
       </label>
-      <button disabled={!email || !password} onClick={() => loginUser({ email, password })}>
+      <button
+        disabled={!email || !password}
+        onClick={async () => {
+          const response = await dispatch(loginUser({ email, password }));
+          if (response.meta.requestStatus === 'fulfilled') {
+            navigate('/');
+          } else {
+            setIsShowingLoginError(true);
+          }
+        }}
+      >
         Увійти
       </button>
       <p>
@@ -36,7 +45,7 @@ export function LoginPage({ loginUser, showError, goToRegisterPage }: Props): Re
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            goToRegisterPage();
+            navigate('/register');
           }}
         >
           Зареєструватись

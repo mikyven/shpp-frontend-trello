@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../../../../../store/hooks';
 import { Input } from '../../../../../../components/Input/Input';
 import './ActionModal.scss';
 import { getBoardData } from '../../../../../../store/slices/boardSlice';
-import { validationRegEx } from '../../../../../../common/constants/validation';
+import { validationRegEx } from '../../../../../../common/constants/regex';
 import { changeCardData, moveCard } from '../../../../../../store/slices/cardModalSlice';
 import { TBoard, TCard, TList, MoveRequestCard } from '../../../../../../common/types/types';
 import { createNewCard } from '../../../../../../store/slices/listSlice';

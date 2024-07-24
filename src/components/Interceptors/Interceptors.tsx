@@ -1,6 +1,7 @@
 import { ReactElement, useEffect } from 'react';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import { Oval } from 'react-loader-spinner';
+// import { useNavigate } from 'react-router-dom';
 import api from '../../api/request';
 import 'react-toastify/dist/ReactToastify.css';
 import './Interceptors.scss';
@@ -8,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { setIsLoading } from '../../store/slices/boardSlice';
 
 export function Interceptors(): ReactElement {
+  // const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading } = useAppSelector((state) => state.board);
 

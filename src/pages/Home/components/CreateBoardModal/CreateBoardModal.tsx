@@ -5,7 +5,7 @@ import './CreateBoardModal.scss';
 import { Input } from '../../../../components/Input/Input';
 import { images } from '../../../../assets/images';
 import { colors } from '../../../../assets/colors';
-import { validationRegEx } from '../../../../common/constants/validation';
+import { validationRegEx } from '../../../../common/constants/regex';
 import useClickOutside from '../../../../hooks/useClickOutside';
 
 type Props = {

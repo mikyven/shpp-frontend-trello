@@ -1,11 +1,12 @@
 import { ReactElement } from 'react';
 import './PasswordStrengthBar.scss';
+import { symbolRegEx } from '../../../../common/constants/regex';
 
 export function checkPasswordStrength(password: string): { value: number; message: string } {
   const lowercase = /[a-z]/.test(password);
   const uppercase = /[A-Z]/.test(password);
   const number = /\d/.test(password);
-  const symbol = /[!"#$%&'()*+,./: ;<=>? @[\]^_`{|}~-]/.test(password);
+  const symbol = symbolRegEx.test(password);
   const strengthTypes: string[] = ['Дуже слабкий', 'Слабкий', 'Хороший', 'Надійний'];
 
   let value = 0;

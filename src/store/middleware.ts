@@ -20,7 +20,9 @@ export const middleware: Middleware<any, any, any> =
         dispatch(setIsLoading(true));
       } else if (
         lazyAction.meta.requestStatus === 'fulfilled' &&
-        !['getBoardData', 'getBoards', 'updateBoard', 'deleteBoard'].includes(lazyAction.type.split('/')[1])
+        !['getBoardData', 'getBoards', 'updateBoard', 'deleteBoard', 'loginUser', 'registerUser'].includes(
+          lazyAction.type.split('/')[1]
+        )
       ) {
         const boardId = lazyAction.meta.arg.boardId as string;
         const boardIds = lazyAction.meta.arg.boardIds as string[] | undefined;
