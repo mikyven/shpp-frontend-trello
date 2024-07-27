@@ -5,13 +5,13 @@ import api from '../../api/request';
 export interface BoardState {
   board: TBoard | null;
   boards: HomeBoard[];
-  isLoading: boolean;
+  currentRequests: Record<string, string>;
 }
 
 const initialState: BoardState = {
   board: null,
   boards: [],
-  isLoading: false,
+  currentRequests: {},
 };
 
 export const createNewBoard = createAsyncThunk(
@@ -42,8 +42,14 @@ export const boardSlice = createSlice({
   name: 'board',
   initialState,
   reducers: {
-    setIsLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+    addRequestStatus: (state, action: PayloadAction<string>) => {
+      state.currentRequests = {
+        ...state.currentRequests,
+        [action.payload.slice(0, action.payload.lastIndexOf('/'))]: action.payload.split('/')[2],
+      };
+    },
+    clearRequests: (state) => {
+      state.currentRequests = {};
     },
   },
   extraReducers: (builder) => {
@@ -60,6 +66,6 @@ export const boardSlice = createSlice({
   },
 });
 
-export const { setIsLoading } = boardSlice.actions;
+export const { addRequestStatus, clearRequests } = boardSlice.actions;
 
 export default boardSlice.reducer;

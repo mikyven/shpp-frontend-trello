@@ -1,55 +1,68 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { PasswordStrengthBar, checkPasswordStrength } from '../PasswordStrengthBar/PasswordStrengthBar';
 import { emailRegEx } from '../../../../common/constants/regex';
 import { registerUser } from '../../../../store/slices/authSlice';
 import { useAppDispatch } from '../../../../store/hooks';
+import { requiredField } from '../../../../utils/requiredField';
+
+type Inputs = {
+  email: string;
+  password: string;
+  repeatedPassword: string;
+};
 
 export function RegisterPage(): ReactElement {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [repeatedPassword, setRepeatedPassword] = useState('');
+  const {
+    register,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+  const enteredPassword = watch('password');
+  const passwordStrength = checkPasswordStrength(enteredPassword || '');
 
-  const [isShowingEmailWarning, setIsShowingEmailWarning] = useState(false);
-  const [isShowingRepeatedPasswordWarning, setIsShowingRepeatedPasswordWarning] = useState(false);
-
-  const passwordStrength = checkPasswordStrength(password);
-
-  const isPasswordSafe = passwordStrength.value > 1;
-  const isPasswordRepeatedCorrectly = repeatedPassword === password;
-  const isEmailValid = emailRegEx.test(email);
-
-  const isButtonDisabled = !isEmailValid || !isPasswordSafe || !isPasswordRepeatedCorrectly;
-
-  useEffect(() => setIsShowingEmailWarning(!isEmailValid), [email]);
-
-  useEffect(
-    () => setIsShowingRepeatedPasswordWarning(!!email && !!password && !isPasswordRepeatedCorrectly),
-    [repeatedPassword]
-  );
+  const submit: SubmitHandler<Inputs> = async ({ email, password }): Promise<void> => {
+    dispatch(registerUser({ email, password }));
+  };
 
   return (
-    <form className="registration-form" onSubmit={(e) => e.preventDefault()}>
+    <form className="registration-form" onSubmit={handleSubmit(submit)}>
       <h1>Реєстрація</h1>
       <label>
         Email
-        <input onChange={(e) => setEmail(e.target.value)} />
-        {isShowingEmailWarning && <div className="warning">Email не є валідним!</div>}
+        <input
+          {...register('email', { ...requiredField, pattern: { value: emailRegEx, message: 'Email не є валідним' } })}
+        />
+        {errors.email && <div className="warning">{errors.email.message}</div>}
       </label>
       <label>
-        Пароль <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        Пароль{' '}
+        <input
+          {...register('password', { ...requiredField, validate: { checkStrength: () => passwordStrength.value > 1 } })}
+          type="password"
+        />
         <PasswordStrengthBar strength={passwordStrength} />
+        {errors.password && <div className="warning">{errors.password.message}</div>}
       </label>
       <label>
         Повторіть пароль
-        <input type="password" value={repeatedPassword} onChange={(e) => setRepeatedPassword(e.target.value)} />
-        {isShowingRepeatedPasswordWarning && <div className="warning">Паролі не збігаються!</div>}
+        <input
+          {...register('repeatedPassword', {
+            ...requiredField,
+            validate: {
+              checkAccuracy: (_, formValues) =>
+                formValues.repeatedPassword === formValues.password || 'Паролі не збігаються!',
+            },
+          })}
+          type="password"
+        />
+        {errors.repeatedPassword && <div className="warning">{errors.repeatedPassword.message}</div>}
       </label>
-      <button onClick={() => dispatch(registerUser({ email, password }))} disabled={isButtonDisabled}>
-        Зареєструватись
-      </button>
+      <button type="submit">Зареєструватись</button>
       <p>
         Вже є аккаунт?{' '}
         <a

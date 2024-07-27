@@ -1,5 +1,5 @@
 import { Middleware } from '@reduxjs/toolkit';
-import { setIsLoading, updateBoard } from './slices/boardSlice';
+import { addRequestStatus, updateBoard } from './slices/boardSlice';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const middleware: Middleware<any, any, any> =
@@ -13,12 +13,8 @@ export const middleware: Middleware<any, any, any> =
     const lazyAction = action as LazyActionType;
 
     if (lazyAction.meta) {
+      dispatch(addRequestStatus(lazyAction.type));
       if (
-        lazyAction.meta.requestStatus === 'pending' &&
-        !['getBoards', 'updateBoard'].includes(lazyAction.type.split('/')[1])
-      ) {
-        dispatch(setIsLoading(true));
-      } else if (
         lazyAction.meta.requestStatus === 'fulfilled' &&
         !['getBoardData', 'getBoards', 'updateBoard', 'deleteBoard', 'loginUser', 'registerUser'].includes(
           lazyAction.type.split('/')[1]

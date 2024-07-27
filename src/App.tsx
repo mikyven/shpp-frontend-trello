@@ -8,26 +8,27 @@ import { ProtectedRoute } from './utils/ProtectedRoute';
 import { LoginPage } from './pages/Auth/components/LoginPage/LoginPage';
 import { Auth } from './pages/Auth/Auth';
 import { RegisterPage } from './pages/Auth/components/RegistrationForm/RegisterPage';
+import { ErrorPage } from './pages/Error/ErrorPage';
 
 function App(): ReactElement {
   return (
-    <>
-      <Interceptors />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<ProtectedRoute />}>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Interceptors />}>
             <Route path="/" element={<Home />} />
             <Route path="/board/:boardId/*" element={<Board />}>
               <Route path="card/:cardId" element={<CardModal />} />
             </Route>
           </Route>
-          <Route element={<Auth />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </>
+          <Route path="/error" element={<ErrorPage />} />
+        </Route>
+        <Route element={<Auth />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -5,7 +5,7 @@ import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { Board } from './components/Board/Board';
 import { CreateBoardModal } from './components/CreateBoardModal/CreateBoardModal';
 import './Home.scss';
-import { createNewBoard, getBoards, setIsLoading } from '../../store/slices/boardSlice';
+import { createNewBoard, getBoards } from '../../store/slices/boardSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 export function Home(): ReactElement {
@@ -17,7 +17,6 @@ export function Home(): ReactElement {
 
   useEffect(() => {
     dispatch(getBoards());
-    dispatch(setIsLoading(true));
   }, []);
 
   async function postNewBoard(title: string, background: string): Promise<void> {

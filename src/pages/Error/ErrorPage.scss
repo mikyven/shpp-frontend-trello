@@ -1,0 +1,28 @@
+@use '/src/styles/global' as v;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+
+.error-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  h1 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 96px;
+    margin: map-get(v.$margins, smallest);
+  }
+
+  p.not-found {
+    margin: 0 0 map-get(v.$margins, main);
+    font-size: map-get(v.$fontSizes, large);
+    font-weight: 500;
+  }
+
+  p.links {
+    font-size: map-get(v.$fontSizes, small);
+    font-weight: 300;
+  }
+}

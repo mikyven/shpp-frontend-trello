@@ -29,8 +29,9 @@ type Props = {
 
 export function PasswordStrengthBar({ strength }: Props): ReactElement {
   const strengthBars: ReactElement[] = [];
+  const strengthBarsNumber = 4;
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < strengthBarsNumber; i++) {
     strengthBars[i] = <div key={i} className={strength.value >= i ? 'active' : ''} />;
   }
 

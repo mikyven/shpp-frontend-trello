@@ -6,7 +6,7 @@ import { List } from './components/List/List';
 import './Board.scss';
 import { BoardMenu } from './components/BoardMenu/BoardMenu';
 import { CardModal } from './components/CardModal/CardModal';
-import { updateBoard, getBoards, editBoardData, deleteBoard, setIsLoading } from '../../store/slices/boardSlice';
+import { updateBoard, getBoards, editBoardData, deleteBoard } from '../../store/slices/boardSlice';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { changeCardData, changeModalVisibility } from '../../store/slices/cardModalSlice';
 import { AddForm } from '../../components/AddForm/AddForm';
@@ -31,7 +31,6 @@ export function Board(): ReactElement {
 
   useEffect(() => {
     (async (): Promise<void> => {
-      dispatch(setIsLoading(true));
       const currentBoard = (await dispatch(updateBoard(boardId || ''))).payload as TBoard;
       dispatch(getBoards());
 

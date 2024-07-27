@@ -1,26 +1,29 @@
 import { ReactElement, useEffect } from 'react';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import { Oval } from 'react-loader-spinner';
-// import { useNavigate } from 'react-router-dom';
-import api from '../../api/request';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { AxiosError } from 'axios';
+import api, { refreshToken } from '../../api/request';
 import 'react-toastify/dist/ReactToastify.css';
 import './Interceptors.scss';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { setIsLoading } from '../../store/slices/boardSlice';
+import { clearRequests } from '../../store/slices/boardSlice';
 
 export function Interceptors(): ReactElement {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isLoading } = useAppSelector((state) => state.board);
+  const { currentRequests } = useAppSelector((state) => state.board);
 
   useEffect(() => {
     api.interceptors.response.use(
       (response) => {
-        dispatch(setIsLoading(false));
+        if (Object.values(currentRequests).every((i) => i === 'fulfilled')) {
+          dispatch(clearRequests());
+        }
         return response;
       },
       (error) => {
-        if (error instanceof Error) {
+        if (error instanceof AxiosError) {
           toast.error(`${error.message} `, {
             position: 'bottom-left',
             autoClose: 2000,
@@ -31,6 +34,25 @@ export function Interceptors(): ReactElement {
             theme: 'dark',
             transition: Bounce,
           });
+
+          switch (error.response?.status) {
+            case 404:
+              navigate('/error');
+              break;
+            case 401:
+              refreshToken()
+                .then(() => {
+                  window.location.reload();
+                })
+                .catch(() => {
+                  localStorage.clear();
+                  navigate('/login');
+                });
+              break;
+            default:
+              break;
+          }
+          throw error;
         }
       }
     );
@@ -38,7 +60,7 @@ export function Interceptors(): ReactElement {
 
   return (
     <>
-      {isLoading && (
+      {Object.values(currentRequests).includes('pending') && (
         <div className="loading">
           <Oval
             visible
@@ -53,6 +75,7 @@ export function Interceptors(): ReactElement {
           />
         </div>
       )}
+      <Outlet />
       <ToastContainer
         position="bottom-left"
         autoClose={2000}
