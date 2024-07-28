@@ -14,14 +14,14 @@ function App(): ReactElement {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Interceptors />}>
+        <Route element={<Interceptors />}>
+          <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/board/:boardId/*" element={<Board />}>
               <Route path="card/:cardId" element={<CardModal />} />
             </Route>
+            <Route path="/error" element={<ErrorPage />} />
           </Route>
-          <Route path="/error" element={<ErrorPage />} />
         </Route>
         <Route element={<Auth />}>
           <Route path="/login" element={<LoginPage />} />

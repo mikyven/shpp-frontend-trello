@@ -30,26 +30,28 @@ export function Board(): ReactElement {
   const [isChangingTitle, setIsChangingTitle] = useState(false);
 
   useEffect(() => {
-    (async (): Promise<void> => {
-      const currentBoard = (await dispatch(updateBoard(boardId || ''))).payload as TBoard;
-      dispatch(getBoards());
+    setTimeout(() => {
+      (async (): Promise<void> => {
+        const currentBoard = (await dispatch(updateBoard(boardId || ''))).payload as TBoard;
+        dispatch(getBoards());
 
-      if (cardId) {
-        dispatch(changeModalVisibility(true));
+        if (cardId) {
+          dispatch(changeModalVisibility(true));
 
-        let card: TCard | null = null;
-        const list =
-          currentBoard &&
-          currentBoard.lists.find((i) => {
-            card = i.cards.find((j) => j.id === +cardId) as TCard;
-            return card;
-          });
+          let card: TCard | null = null;
+          const list =
+            currentBoard &&
+            currentBoard.lists.find((i) => {
+              card = i.cards.find((j) => j.id === +cardId) as TCard;
+              return card;
+            });
 
-        if (card && list) {
-          dispatch(changeCardData({ ...(card as TCard), list: { ...list } }));
+          if (card && list) {
+            dispatch(changeCardData({ ...(card as TCard), list: { ...list } }));
+          }
         }
-      }
-    })();
+      })();
+    });
   }, []);
 
   useEffect(() => setTitleValue(board ? board.title : ''), [board]);

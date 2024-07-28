@@ -15,7 +15,7 @@ export const updateToken = (): void => {
   instance.defaults.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
 };
 
-async function refreshToken(): Promise<void> {
+export async function refreshToken(): Promise<void> {
   const storedRefreshToken = localStorage.getItem('refreshToken');
   if (!storedRefreshToken) throw new Error();
   const response: RefreshResponse = await instance.post('/refresh', {
@@ -24,7 +24,7 @@ async function refreshToken(): Promise<void> {
   if (response && response.result === 'Authorized') {
     localStorage.setItem('token', response.token);
     localStorage.setItem('refreshToken', response.refreshToken);
-    window.location.href = '/';
+    window.location.reload();
   } else {
     throw new Error();
   }
@@ -42,12 +42,7 @@ instance.interceptors.request.use((request) => {
 instance.interceptors.response.use(
   (res) => res.data,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      refreshToken().catch(() => {
-        localStorage.clear();
-        window.location.href = '/login';
-      });
-    }
+    throw error;
   }
 );
 

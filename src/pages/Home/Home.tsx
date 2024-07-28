@@ -16,7 +16,8 @@ export function Home(): ReactElement {
   const [isAddingBoard, setIsAddingBoard] = useState(false);
 
   useEffect(() => {
-    dispatch(getBoards());
+    // interceptors won't work because they don't have time to set
+    setTimeout(() => dispatch(getBoards()));
   }, []);
 
   async function postNewBoard(title: string, background: string): Promise<void> {
