@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { api } from '../common/constants';
 
 const instance = axios.create({
@@ -15,17 +15,18 @@ export const updateToken = (): void => {
   instance.defaults.headers.Authorization = `Bearer ${localStorage.getItem('token')}`;
 };
 
-export async function refreshToken(): Promise<void> {
-  try {
-    const response: RefreshResponse = await instance.post('/refresh', {
-      refreshToken: localStorage.getItem('refreshToken'),
-    });
-    if (response && response.result === 'Authorized') {
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('refreshToken', response.refreshToken);
-    }
-  } catch (error) {
-    throw error as AxiosError;
+async function refreshToken(): Promise<void> {
+  const storedRefreshToken = localStorage.getItem('refreshToken');
+  if (!storedRefreshToken) throw new Error();
+  const response: RefreshResponse = await instance.post('/refresh', {
+    refreshToken: storedRefreshToken,
+  });
+  if (response && response.result === 'Authorized') {
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('refreshToken', response.refreshToken);
+    window.location.href = '/';
+  } else {
+    throw new Error();
   }
 }
 
@@ -38,6 +39,16 @@ instance.interceptors.request.use((request) => {
   return request;
 });
 
-instance.interceptors.response.use((res) => res.data);
+instance.interceptors.response.use(
+  (res) => res.data,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      refreshToken().catch(() => {
+        localStorage.clear();
+        window.location.href = '/login';
+      });
+    }
+  }
+);
 
 export default instance;

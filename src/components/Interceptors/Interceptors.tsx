@@ -3,7 +3,7 @@ import { ToastContainer, toast, Bounce } from 'react-toastify';
 import { Oval } from 'react-loader-spinner';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
-import api, { refreshToken } from '../../api/request';
+import api from '../../api/request';
 import 'react-toastify/dist/ReactToastify.css';
 import './Interceptors.scss';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -35,24 +35,7 @@ export function Interceptors(): ReactElement {
             transition: Bounce,
           });
 
-          switch (error.response?.status) {
-            case 404:
-              navigate('/error');
-              break;
-            case 401:
-              refreshToken()
-                .then(() => {
-                  window.location.reload();
-                })
-                .catch(() => {
-                  localStorage.clear();
-                  navigate('/login');
-                });
-              break;
-            default:
-              break;
-          }
-          throw error;
+          if (error.response?.status === 404) navigate('/error');
         }
       }
     );
